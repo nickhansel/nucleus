@@ -5,11 +5,11 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/nickhansel/nucleus/config"
+	"github.com/nickhansel/nucleus/pkg/config"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nickhansel/nucleus/api"
-	"github.com/nickhansel/nucleus/model"
+	"github.com/nickhansel/nucleus/pkg/api"
+	"github.com/nickhansel/nucleus/pkg/model"
 	"gorm.io/gen"
 )
 
@@ -20,8 +20,6 @@ func main() {
 	config.Connect()
 
 	r.GET("/customers/:orgId", api.GetCustomers)
-	r.GET("/test", api.Test)
-
 	r.GET("/purchases", func(c *gin.Context) {
 		purchases := []model.Purchase{}
 		// add the purchased items and the variation related to the purchased item to the purchase struct

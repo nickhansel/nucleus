@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 # copy env
 COPY .env .
-RUN go build -o ./app ./src/main.go
+RUN go build -o ./app ./main.go
 
 FROM alpine:latest
 

@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/nickhansel/nucleus/config"
-	"github.com/nickhansel/nucleus/model"
+	"github.com/nickhansel/nucleus/pkg/config"
+	"github.com/nickhansel/nucleus/pkg/model"
 
 	"github.com/gin-gonic/gin"
 )
