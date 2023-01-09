@@ -14,9 +14,8 @@ require (
 	github.com/jinzhu/gorm v1.9.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
-	github.com/mattn/go-sqlite3 v1.14.15 // indirect
-	github.com/prisma/prisma-client-go v0.16.3 // indirect
 	github.com/takuoki/gocase v1.0.0 // indirect
 	github.com/ugorji/go v1.1.2 // indirect
 	github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43 // indirect

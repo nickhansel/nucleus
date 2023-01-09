@@ -20,9 +20,9 @@ func main() {
 	config.Connect()
 
 	r.GET("/customers/:orgId", api.GetCustomers)
+	r.GET("/test", api.Test)
 
 	r.GET("/purchases", func(c *gin.Context) {
-		// ignore erros handling for brevit
 		purchases := []model.Purchase{}
 		// add the purchased items and the variation related to the purchased item to the purchase struct
 		err := config.DB.Preload("PurchasedItems").Preload("PurchasedItems.Variation").Find(&purchases).Error
