@@ -2,8 +2,9 @@ module github.com/nickhansel/nucleus
 
 go 1.19
 
+require github.com/dgrijalva/jwt-go v3.2.0+incompatible
+
 require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/sse v0.0.0-20190125020943-a7658810eb74 // indirect
 	github.com/gin-gonic/gin v1.3.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
@@ -16,6 +17,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
+	github.com/lib/pq v1.10.7 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/takuoki/gocase v1.0.0 // indirect
 	github.com/ugorji/go v1.1.2 // indirect

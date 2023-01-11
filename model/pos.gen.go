@@ -11,7 +11,7 @@ import (
 const TableNamePo = "Pos"
 
 // Po mapped from table <Pos>
-type Po struct {
+type Pos struct {
 	ID             int32     `gorm:"column:id;primaryKey" json:"id"`
 	Name           string    `gorm:"column:name;not null" json:"name"`
 	AccessToken    string    `gorm:"column:access_token;not null" json:"access_token"`
@@ -22,6 +22,6 @@ type Po struct {
 }
 
 // TableName Po's table name
-func (*Po) TableName() string {
+func (*Pos) TableName() string {
 	return TableNamePo
 }

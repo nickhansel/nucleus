@@ -47,6 +47,8 @@ func CheckOrgMiddleware() gin.HandlerFunc {
 		// find if the user is apart of the org
 		for _, member := range orgs.Members {
 			if member.ID == id {
+				// send orgs to the next middleware
+				c.Set("orgs", orgs)
 				c.Next()
 				return
 			}

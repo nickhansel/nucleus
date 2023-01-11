@@ -10,6 +10,7 @@ import (
 	"github.com/nickhansel/nucleus/api/auth"
 	"github.com/nickhansel/nucleus/api/customers"
 	"github.com/nickhansel/nucleus/api/middleware"
+	org "github.com/nickhansel/nucleus/api/organization"
 	"github.com/nickhansel/nucleus/api/transactions"
 	"gorm.io/gen"
 )
@@ -22,6 +23,8 @@ func main() {
 
 	// pass middleware.JWT() to the r.Use function to use the middleware
 	r.GET("/login", auth.LoginUser)
+	r.GET("/organization/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), org.GetOrg)
+	r.POST("/organization/:orgId", middleware.JwtAuthMiddleware(), org.CreateOrg)
 	r.GET("/customers/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.GetCustomers)
 	r.GET("/purchases/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), transactions.GetPurchases)
 

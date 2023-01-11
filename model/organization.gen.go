@@ -6,9 +6,12 @@ package model
 
 import (
 	"time"
+	// import pq
 )
 
 const TableNameOrganization = "Organization"
+
+type MultiString []string
 
 // Organization mapped from table <Organization>
 type Organization struct {
@@ -16,7 +19,7 @@ type Organization struct {
 	Members 		 []User     `gorm:"foreignKey:OrganizationID;references:ID"` 
 	Name              string    `gorm:"column:name;not null" json:"name"`
 	CreatedAt         time.Time `gorm:"column:createdAt;not null;default:CURRENT_TIMESTAMP" json:"createdAt"`
-	FbCustomAudiences string    `gorm:"column:fb_custom_audiences" json:"fb_custom_audiences"`
+	FbCustomAudiences MultiString `gorm:"type:text[]" json:"fbCustomAudiences"`
 	IsSendgridAuthed  bool      `gorm:"column:is_sendgrid_authed;not null" json:"is_sendgrid_authed"`
 	IsTwilioAuthed    bool      `gorm:"column:is_twilio_authed;not null" json:"is_twilio_authed"`
 	Plan              int32     `gorm:"column:plan;not null" json:"plan"`
