@@ -10,9 +10,16 @@ import (
 
 const TableNameUser = "User"
 
+// OrganizationToUser table looks like this:
+// CREATE TABLE _OrganizationToUser (
+//     A int4 NOT NULL,
+//     B int4 NOT NULL,
+//     CONSTRAINT _OrganizationToUser_pkey PRIMARY KEY (A, B)
+// );
 // User mapped from table <User>
 type User struct {
 	ID        int32     `gorm:"column:id;primaryKey" json:"id"`
+	OrganizationID int32 `gorm:"column:organizationId;not null" json:"organizationId"`
 	Email     string    `gorm:"column:email;not null" json:"email"`
 	FirstName string    `gorm:"column:firstName;not null" json:"firstName"`
 	LastName  string    `gorm:"column:lastName;not null" json:"lastName"`

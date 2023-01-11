@@ -13,6 +13,7 @@ const TableNameOrganization = "Organization"
 // Organization mapped from table <Organization>
 type Organization struct {
 	ID                int32     `gorm:"column:id;primaryKey" json:"id"`
+	Members 		 []User     `gorm:"foreignKey:OrganizationID;references:ID"` 
 	Name              string    `gorm:"column:name;not null" json:"name"`
 	CreatedAt         time.Time `gorm:"column:createdAt;not null;default:CURRENT_TIMESTAMP" json:"createdAt"`
 	FbCustomAudiences string    `gorm:"column:fb_custom_audiences" json:"fb_custom_audiences"`

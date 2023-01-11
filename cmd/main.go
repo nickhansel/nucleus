@@ -1,15 +1,16 @@
 package main
 
 import (
-	"net/http"
-
 	"gorm.io/gorm"
 
 	"github.com/nickhansel/nucleus/config"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nickhansel/nucleus/api"
-	"github.com/nickhansel/nucleus/model"
+	// "github.com/nickhansel/nucleus/api"
+	"github.com/nickhansel/nucleus/api/auth"
+	"github.com/nickhansel/nucleus/api/customers"
+	"github.com/nickhansel/nucleus/api/middleware"
+	"github.com/nickhansel/nucleus/api/transactions"
 	"gorm.io/gen"
 )
 
@@ -19,25 +20,10 @@ func main() {
 
 	config.Connect()
 
-	r.GET("/customers/:orgId", api.GetCustomers)
-	r.GET("/test", api.Test)
-
-	r.GET("/purchases", func(c *gin.Context) {
-		purchases := []model.Purchase{}
-		// add the purchased items and the variation related to the purchased item to the purchase struct
-		err := config.DB.Preload("PurchasedItems").Preload("PurchasedItems.Variation").Find(&purchases).Error
-
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"purchases": purchases,
-		})
-	})
+	// pass middleware.JWT() to the r.Use function to use the middleware
+	r.GET("/login", auth.LoginUser)
+	r.GET("/customers/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.GetCustomers)
+	r.GET("/purchases/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), transactions.GetPurchases)
 
 	// use api.getCustomers to handle the request
 
