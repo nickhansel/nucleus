@@ -16,6 +16,7 @@ type MultiString []string
 // Organization mapped from table <Organization>
 type Organization struct {
 	ID                int32     `gorm:"column:id;primaryKey" json:"id"`
+	SendgridID 	  int32    `gorm:"column:sendgrid_id;" json:"sendgrid_id"`
 	Members 		 []User     `gorm:"foreignKey:OrganizationID;references:ID"` 
 	Name              string    `gorm:"column:name;not null" json:"name"`
 	CreatedAt         time.Time `gorm:"column:createdAt;not null;default:CURRENT_TIMESTAMP" json:"createdAt"`

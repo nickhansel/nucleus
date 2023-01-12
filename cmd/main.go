@@ -12,6 +12,8 @@ import (
 	"github.com/nickhansel/nucleus/api/middleware"
 	org "github.com/nickhansel/nucleus/api/organization"
 	"github.com/nickhansel/nucleus/api/transactions"
+	"github.com/nickhansel/nucleus/sendgrid"
+	"github.com/nickhansel/nucleus/twilio"
 	"gorm.io/gen"
 )
 
@@ -23,10 +25,19 @@ func main() {
 
 	// pass middleware.JWT() to the r.Use function to use the middleware
 	r.GET("/login", auth.LoginUser)
+
+	r.POST("/organization", middleware.JwtAuthMiddleware(), org.CreateOrg)
 	r.GET("/organization/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), org.GetOrg)
-	r.POST("/organization/:orgId", middleware.JwtAuthMiddleware(), org.CreateOrg)
+	r.PUT("/organization/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), org.UpdateOrg)
+
 	r.GET("/customers/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.GetCustomers)
 	r.GET("/purchases/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), transactions.GetPurchases)
+
+	r.POST("/sendgrid/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), sendgrid.VerifySendgridEmail)
+	r.POST("/sendgrid/:orgId/resend", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), sendgrid.ResendVerificationEmail)
+
+	r.POST("/twilio/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.RegisterOrgTwilioNumber)
+	r.POST("/twilio/:orgId/send", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.SendText)
 
 	// use api.getCustomers to handle the request
 
