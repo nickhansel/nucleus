@@ -12,6 +12,9 @@ import (
 	"github.com/nickhansel/nucleus/api/middleware"
 	org "github.com/nickhansel/nucleus/api/organization"
 	"github.com/nickhansel/nucleus/api/transactions"
+	fbAcc "github.com/nickhansel/nucleus/fb/account"
+	fb "github.com/nickhansel/nucleus/fb/ads"
+	fbAud "github.com/nickhansel/nucleus/fb/audiences"
 	"github.com/nickhansel/nucleus/sendgrid"
 	"github.com/nickhansel/nucleus/twilio"
 	"gorm.io/gen"
@@ -31,6 +34,10 @@ func main() {
 	r.PUT("/organization/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), org.UpdateOrg)
 
 	r.GET("/customers/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.GetCustomers)
+	// r.POST("/work", customers.CreateCustomerGroup)
+	r.POST("/customers/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.CreateCustomerGroup)
+	r.GET("/customers/:orgId/groups/:groupId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.GetCustomerGroup)
+
 	r.GET("/purchases/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), transactions.GetPurchases)
 
 	r.POST("/sendgrid/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), sendgrid.VerifySendgridEmail)
@@ -38,6 +45,16 @@ func main() {
 
 	r.POST("/twilio/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.RegisterOrgTwilioNumber)
 	r.POST("/twilio/:orgId/send", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.SendText)
+
+	r.POST("/fb/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fb.CreateCampaign)
+	r.POST("/fb/:orgId/adset", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fb.CreateAdSet)
+	r.GET("/fb/:orgId/pagename", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fbAcc.GetPageID)
+
+	r.GET("/fb/:orgId/url", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fb.CreateAd)
+	// r.POST("/fb/:orgId/create_audience/:customer_group_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fbAud.CreateCustomAudience)
+	r.POST("/fb/:orgId/audiences/:customer_group_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fbAud.CreateCustomAudience)
+
+	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request
 

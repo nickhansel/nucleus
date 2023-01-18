@@ -19,6 +19,7 @@ type FbAdset struct {
 	Status           string  `gorm:"column:status;not null" json:"status"`
 	FbTargetID       int32   `gorm:"column:fb_targetId;not null" json:"fb_targetId"`
 	FbCampaignID     int32   `gorm:"column:fb_campaignId;not null" json:"fb_campaignId"`
+	FbAdsetID		string  `gorm:"column:fb_adset_id;not null" json:"fb_adset_id"`
 }
 
 // TableName FbAdset's table name

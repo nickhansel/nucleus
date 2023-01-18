@@ -16,6 +16,12 @@ type MultiString []string
 // Organization mapped from table <Organization>
 type Organization struct {
 	ID                int32     `gorm:"column:id;primaryKey" json:"id"`
+	FbAdAccountID	 string     `gorm:"column:fb_ad_account_id;" json:"fb_ad_account_id"`
+	FbAccessToken	 string    `gorm:"column:fb_access_token;" json:"fb_access_token"`
+	FbPageID		 string    `gorm:"column:fb_page_id;" json:"fb_page_id"`
+	FbPageFanCount	 int32    `gorm:"column:fb_page_fan_count;" json:"fb_page_fan_count"`
+	FbPageName 		 string    `gorm:"column:fb_page_name;" json:"fb_page_name"`
+	FbPageImgURL 	 string    `gorm:"column:fb_page_img_url;" json:"fb_page_img_url"`
 	SendgridID 	  int32    `gorm:"column:sendgrid_id;" json:"sendgrid_id"`
 	Members 		 []User     `gorm:"foreignKey:OrganizationID;references:ID"` 
 	Name              string    `gorm:"column:name;not null" json:"name"`

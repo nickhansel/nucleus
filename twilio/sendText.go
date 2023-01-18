@@ -1,8 +1,6 @@
 package twilio
 
 import (
-	"fmt"
-
 	"log"
 	"os"
 
@@ -15,8 +13,8 @@ import (
 )
 
 type Body struct {
-	Body string `json:"body"`
-	To   string `json:"to"`
+	Body string  `json:"body"`
+	To   []int32 `json:"to"`
 }
 
 func SendText(c *gin.Context) {
@@ -28,8 +26,7 @@ func SendText(c *gin.Context) {
 
 	os.Setenv("TWILIO_ACCOUNT_SID", os.Getenv("TWILIO_ACCOUNT_SID"))
 	os.Setenv("TWILIO_AUTH_TOKEN", os.Getenv("TWILIO_AUTH_TOKEN"))
-	// Find your Account SID and Auth Token at twilio.com/console
-	// and set the environment variables. See http://twil.io/secure
+
 	client := twilio.NewRestClient()
 
 	org := c.MustGet("orgs").(model.Organization)
@@ -37,27 +34,34 @@ func SendText(c *gin.Context) {
 	var organization model.Organization
 	config.DB.Where("id = ?", org.ID).First(&organization)
 
+	numbers := []string{}
+
+	// get the numbers associated with the customer ids in the to field of the body
+
 	var body Body
 	c.BindJSON(&body)
 
-	params := &api.CreateMessageParams{}
-	params.SetBody(body.Body)
-	params.SetFrom(org.TwilioNumber)
-	params.SetTo(body.To)
-
-	resp, err := client.Api.CreateMessage(params)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		if resp.Sid != nil {
-			fmt.Println(*resp.Sid)
-		} else {
-			fmt.Println(resp.Sid)
-		}
+	for _, number := range body.To {
+		var customer model.Customer
+		config.DB.Where("id = ?", number).First(&customer)
+		numbers = append(numbers, customer.PhoneNumber)
 	}
 
-	c.JSON(200, gin.H{
-		"message": body.Body,
-		"to":      body.To,
-	})
+	for index := range body.To {
+		params := &api.CreateMessageParams{}
+		params.SetBody(body.Body)
+		params.SetFrom(organization.TwilioNumber)
+		params.SetTo(numbers[index])
+
+		resp, err := client.Api.CreateMessage(params)
+
+		if err != nil || resp.ErrorCode != nil {
+			log.Fatal(err)
+		}
+
+		c.JSON(200, gin.H{
+			"message": "success",
+		})
+
+	}
 }

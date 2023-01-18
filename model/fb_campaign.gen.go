@@ -12,7 +12,7 @@ type FbCampaign struct {
 	Name       string `gorm:"column:name;not null" json:"name"`
 	Objective  string `gorm:"column:objective;not null" json:"objective"`
 	Status     string `gorm:"column:status;not null" json:"status"`
-	CampaignID int32  `gorm:"column:campaignId;not null" json:"campaignId"`
+	CampaignID int32 `gorm:"column:campaignId;not null" json:"campaignId"`
 }
 
 // TableName FbCampaign's table name

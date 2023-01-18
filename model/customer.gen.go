@@ -32,6 +32,7 @@ type Customer struct {
 	Country                      string  `gorm:"column:country" json:"country"`
 	Locality                     string  `gorm:"column:locality" json:"locality"`
 	PostalCode                   string  `gorm:"column:postal_code" json:"postal_code"`
+	CustomerGroup []CustomerGroup `gorm:"foreignKey:ID;references:ID" json:"customers"`
 }
 
 // TableName Customer's table name
