@@ -1,8 +1,6 @@
 package main
 
 import (
-	"gorm.io/gorm"
-
 	"github.com/nickhansel/nucleus/config"
 
 	"github.com/gin-gonic/gin"
@@ -13,13 +11,12 @@ import (
 	"github.com/nickhansel/nucleus/api/middleware"
 	org "github.com/nickhansel/nucleus/api/organization"
 	"github.com/nickhansel/nucleus/api/transactions"
+	"github.com/nickhansel/nucleus/cron"
 	fbAcc "github.com/nickhansel/nucleus/fb/account"
 	fb "github.com/nickhansel/nucleus/fb/ads"
 	fbAud "github.com/nickhansel/nucleus/fb/audiences"
 	"github.com/nickhansel/nucleus/sendgrid"
 	"github.com/nickhansel/nucleus/twilio"
-
-	"gorm.io/gen"
 )
 
 func main() {
@@ -28,6 +25,8 @@ func main() {
 
 	config.Connect()
 
+	cron.ScheduleTask("2023-01-22 11:27:10")
+	// 2023-01-13 20:04:27.299298 -0600 CST m=+36.150158126
 	// pass middleware.JWT() to the r.Use function to use the middleware
 	r.GET("/login", auth.LoginUser)
 
@@ -67,21 +66,4 @@ func main() {
 	})
 
 	r.Run() // listen and serve on 0.0.0.0:8080
-}
-
-// function to generate the strcut for the db table
-func generateTable(db *gorm.DB) {
-	// generate struct for the db table using the gorm gen package
-	g := gen.NewGenerator(gen.Config{
-		OutPath: "../query",
-		Mode:    gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface, // generate mode
-	})
-
-	// gormdb, _ := gorm.Open(mysql.Open("root:@(127.0.0.1:3306)/demo?charset=utf8mb4&parseTime=True&loc=Local"))
-	g.UseDB(db) // reuse your gorm db
-
-	g.GenerateAllTable()
-
-	g.Execute() // generate
-
 }

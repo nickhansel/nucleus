@@ -5,11 +5,14 @@ go 1.19
 require github.com/dgrijalva/jwt-go v3.2.0+incompatible
 
 require (
+	github.com/madflojo/tasks v1.0.4 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
+	github.com/rs/xid v1.3.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 )
 
 require (
+	github.com/aws/aws-lambda-go v1.37.0
 	github.com/aws/aws-sdk-go v1.44.180 // indirect
 	github.com/gin-contrib/sse v0.0.0-20190125020943-a7658810eb74 // indirect
 	github.com/gin-gonic/gin v1.3.0 // indirect
