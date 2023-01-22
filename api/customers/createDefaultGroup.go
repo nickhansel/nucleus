@@ -21,7 +21,7 @@ func CreateDefaultGroup(c *gin.Context) {
 
 	// create a customer group and connect all of the customers that have organizationId = 19
 	var customerGroup model.CustomerGroup
-	customerGroup.Name = "Test Group"
+	customerGroup.Name = "Default Customers"
 	customerGroup.OrganizationID = 19
 	customerGroup.CreatedAt = time.Now()
 	customerGroup.UpdatedAt = time.Now()

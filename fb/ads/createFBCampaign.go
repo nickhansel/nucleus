@@ -77,6 +77,7 @@ func CreateCampaign(c *gin.Context) {
 	Campaign.Type = campaignBody.CampaignType
 	Campaign.OrganizationID = org.ID
 	Campaign.Budget = 0
+	Campaign.IsFbCampaign = true
 
 	// save the campaign to the db
 	config.DB.Save(&Campaign)

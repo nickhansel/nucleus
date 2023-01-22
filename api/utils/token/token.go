@@ -24,8 +24,10 @@ func GenerateAccessToken(user_id int32) (string, error) {
 	claims["authorized"] = true
 	claims["type"] = "access"
 	claims["user_id"] = user_id
-	// exp date that expires in 1 hour
-	claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
+	// // exp date that expires in 1 hour
+	// claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
+	// exp date that expires in 20 years
+	claims["exp"] = time.Now().Add(time.Hour * 24 * 365 * 20).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

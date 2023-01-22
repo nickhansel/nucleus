@@ -5,9 +5,15 @@ go 1.19
 require github.com/dgrijalva/jwt-go v3.2.0+incompatible
 
 require (
+	github.com/robfig/cron/v3 v3.0.1 // indirect
+	golang.org/x/sync v0.1.0 // indirect
+)
+
+require (
 	github.com/aws/aws-sdk-go v1.44.180 // indirect
 	github.com/gin-contrib/sse v0.0.0-20190125020943-a7658810eb74 // indirect
 	github.com/gin-gonic/gin v1.3.0 // indirect
+	github.com/go-co-op/gocron v1.18.0
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect

@@ -15,6 +15,10 @@ type Campaign struct {
 	Budget         float64 `gorm:"column:budget;not null" json:"budget"`
 	OrganizationID int32   `gorm:"column:organizationId;not null" json:"organizationId"`
 	FbCampaign    FbCampaign `gorm:"foreignKey:campaignId;references:ID"`
+	Name 		 string `gorm:"column:name;not null" json:"name"`
+	IsFbCampaign bool `gorm:"bool:isFbCampaign;not null" json:"is_fb_campaign"`
+	IsTextCampaign bool `gorm:"bool:isTextCampaign;not null" json:"is_text_campaign"`
+	IsEmailCampaign bool `gorm:"bool:isEmailCampaign;not null" json:"is_email_campaign"`
 }
 
 // TableName Campaign's table name

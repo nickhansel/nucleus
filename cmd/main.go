@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	// "github.com/nickhansel/nucleus/api"
 	"github.com/nickhansel/nucleus/api/auth"
+	campaign "github.com/nickhansel/nucleus/api/campaigns"
 	"github.com/nickhansel/nucleus/api/customers"
 	"github.com/nickhansel/nucleus/api/middleware"
 	org "github.com/nickhansel/nucleus/api/organization"
@@ -17,6 +18,7 @@ import (
 	fbAud "github.com/nickhansel/nucleus/fb/audiences"
 	"github.com/nickhansel/nucleus/sendgrid"
 	"github.com/nickhansel/nucleus/twilio"
+
 	"gorm.io/gen"
 )
 
@@ -53,7 +55,9 @@ func main() {
 	r.GET("/fb/:orgId/url", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fb.CreateAd)
 	// r.POST("/fb/:orgId/create_audience/:customer_group_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fbAud.CreateCustomAudience)
 	r.POST("/fb/:orgId/audiences/:customer_group_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fbAud.CreateCustomAudience)
+	r.PUT("/fb/:orgId/audiences/:customer_group_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fbAud.UpdateCustomAudience)
 
+	r.POST("/campaigns/:orgId/text", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.CreateTextCampaign)
 	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request
