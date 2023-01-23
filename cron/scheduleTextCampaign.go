@@ -6,6 +6,9 @@ import (
 	"fmt"
 
 	"github.com/madflojo/tasks"
+
+	model "github.com/nickhansel/nucleus/model"
+	twilio "github.com/nickhansel/nucleus/twilio"
 )
 
 func secondsFromNow(dateString string) int {
@@ -15,8 +18,10 @@ func secondsFromNow(dateString string) int {
 	return int(t.Sub(time.Now()).Seconds())
 }
 
-func ScheduleTask(Date string) {
+func ScheduleTextTask(Date string, TextCampaign model.TextCampaign, org model.Organization) {
 	scheduler := tasks.New()
+
+	// print scheduled tasks
 
 	howMany := secondsFromNow(Date)
 
@@ -24,7 +29,7 @@ func ScheduleTask(Date string) {
 		Interval: time.Duration(howMany) * time.Second,
 		RunOnce:  true,
 		TaskFunc: func() error {
-			fmt.Println("Hello World")
+			twilio.SendScheduledTexts(TextCampaign, org)
 			return nil
 		},
 	})
@@ -32,6 +37,6 @@ func ScheduleTask(Date string) {
 		fmt.Println(err)
 		fmt.Println("Error scheduling task")
 	}
-
+	fmt.Println("Scheduled task with ID: ", id, " to run in ", howMany, " seconds at ", Date)
 	fmt.Println(id)
 }

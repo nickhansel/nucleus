@@ -17,7 +17,7 @@ type Body struct {
 	To   []int32 `json:"to"`
 }
 
-func SendText(c *gin.Context) {
+func SendTextAPI(c *gin.Context) {
 	err := godotenv.Load("../.env")
 
 	if err != nil {
@@ -63,5 +63,36 @@ func SendText(c *gin.Context) {
 			"message": "success",
 		})
 
+	}
+}
+
+func SendScheduledTexts(TextCampaign model.TextCampaign, org model.Organization) {
+	err := godotenv.Load("../.env")
+
+	if err != nil {
+		log.Fatal("Error loading .env file for twilio")
+	}
+
+	os.Setenv("TWILIO_ACCOUNT_SID", os.Getenv("TWILIO_ACCOUNT_SID"))
+	os.Setenv("TWILIO_AUTH_TOKEN", os.Getenv("TWILIO_AUTH_TOKEN"))
+
+	client := twilio.NewRestClient()
+
+	organization := org
+
+	numbers := TextCampaign.TargetNumbers
+	body := TextCampaign
+
+	for index := range body.TargetNumbers {
+		params := &api.CreateMessageParams{}
+		params.SetBody(body.Body)
+		params.SetFrom(organization.TwilioNumber)
+		params.SetTo(numbers[index])
+
+		resp, err := client.Api.CreateMessage(params)
+
+		if err != nil || resp.ErrorCode != nil {
+			log.Fatal(err)
+		}
 	}
 }

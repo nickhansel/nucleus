@@ -11,7 +11,8 @@ import (
 	"github.com/nickhansel/nucleus/api/middleware"
 	org "github.com/nickhansel/nucleus/api/organization"
 	"github.com/nickhansel/nucleus/api/transactions"
-	"github.com/nickhansel/nucleus/cron"
+
+	// "github.com/nickhansel/nucleus/cron"
 	fbAcc "github.com/nickhansel/nucleus/fb/account"
 	fb "github.com/nickhansel/nucleus/fb/ads"
 	fbAud "github.com/nickhansel/nucleus/fb/audiences"
@@ -25,7 +26,7 @@ func main() {
 
 	config.Connect()
 
-	cron.ScheduleTask("2023-01-22 11:27:10")
+	// cron.ScheduleTask("2023-01-22 11:27:10")
 	// 2023-01-13 20:04:27.299298 -0600 CST m=+36.150158126
 	// pass middleware.JWT() to the r.Use function to use the middleware
 	r.GET("/login", auth.LoginUser)
@@ -45,7 +46,7 @@ func main() {
 	r.POST("/sendgrid/:orgId/resend", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), sendgrid.ResendVerificationEmail)
 
 	r.POST("/twilio/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.RegisterOrgTwilioNumber)
-	r.POST("/twilio/:orgId/send", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.SendText)
+	r.POST("/twilio/:orgId/send", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.SendTextAPI)
 
 	r.POST("/fb/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fb.CreateCampaign)
 	r.POST("/fb/:orgId/adset", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fb.CreateAdSet)

@@ -19,6 +19,11 @@ type Campaign struct {
 	IsFbCampaign bool `gorm:"bool:isFbCampaign;not null" json:"is_fb_campaign"`
 	IsTextCampaign bool `gorm:"bool:isTextCampaign;not null" json:"is_text_campaign"`
 	IsEmailCampaign bool `gorm:"bool:isEmailCampaign;not null" json:"is_email_campaign"`
+
+	CustomerGroupID int32 `gorm:"column:customer_group_id;not null" json:"customer_group_id"`
+	CustomersTargeted int32 `gorm:"column:customers_targeted;not null" json:"customers_targeted"`
+	AttributedRevenue float64 `gorm:"column:attributed_revenue;not null" json:"attributed_revenue"`
+	AttributedConversionCount int32 `gorm:"column:attributed_conversion_count;not null" json:"attributed_conversion_count"`
 }
 
 // TableName Campaign's table name
