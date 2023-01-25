@@ -45,7 +45,6 @@ func init() {
 			"",
 		),
 	})))
-
 }
 
 func ListBuckets() (resp *s3.ListBucketsOutput) {

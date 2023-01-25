@@ -28,6 +28,8 @@ type Organization struct {
 	CreatedAt         time.Time `gorm:"column:createdAt;not null;default:CURRENT_TIMESTAMP" json:"createdAt"`
 	FbCustomAudiences MultiString `gorm:"type:text[]" json:"fbCustomAudiences"`
 	IsSendgridAuthed  bool      `gorm:"column:is_sendgrid_authed;not null" json:"is_sendgrid_authed"`
+	SendinblueEmail   string    `gorm:"column:sendinblue_email;not null" json:"sendinblue_email"`
+	IsSendinblueAuthed  bool      `gorm:"column:is_sendinblue_authed;not null" json:"is_sendinblue_authed"`
 	IsTwilioAuthed    bool      `gorm:"column:is_twilio_authed;not null" json:"is_twilio_authed"`
 	Plan              int32     `gorm:"column:plan;not null" json:"plan"`
 	PosID             int32     `gorm:"column:posId;not null" json:"posId"`
@@ -35,6 +37,7 @@ type Organization struct {
 	TwilioNumber      string    `gorm:"column:twilio_number;not null" json:"twilio_number"`
 	Type              string    `gorm:"column:type;not null" json:"type"`
 	UpdatedAt         time.Time `gorm:"column:updatedAt;not null;default:CURRENT_TIMESTAMP" json:"updatedAt"`
+	EmailVerificationCode string `gorm:"column:email_verification_code;not null" json:"email_verification_code"`
 }
 
 // TableName Organization's table name

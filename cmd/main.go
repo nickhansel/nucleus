@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/nickhansel/nucleus/config"
+	"github.com/nickhansel/nucleus/sendinblue"
 
 	"github.com/gin-gonic/gin"
 	// "github.com/nickhansel/nucleus/api"
@@ -16,7 +17,6 @@ import (
 	fbAcc "github.com/nickhansel/nucleus/fb/account"
 	fb "github.com/nickhansel/nucleus/fb/ads"
 	fbAud "github.com/nickhansel/nucleus/fb/audiences"
-	"github.com/nickhansel/nucleus/sendgrid"
 	"github.com/nickhansel/nucleus/twilio"
 )
 
@@ -42,8 +42,8 @@ func main() {
 
 	r.GET("/purchases/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), transactions.GetPurchases)
 
-	r.POST("/sendgrid/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), sendgrid.VerifySendgridEmail)
-	r.POST("/sendgrid/:orgId/resend", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), sendgrid.ResendVerificationEmail)
+	r.POST("/organization/:orgId/verify_email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), sendinblue.SendVerifyEmail)
+	r.POST("/organization/:orgId/verify_code", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), sendinblue.Verify)
 
 	r.POST("/twilio/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.RegisterOrgTwilioNumber)
 	r.POST("/twilio/:orgId/send", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.SendTextAPI)
@@ -58,6 +58,7 @@ func main() {
 	r.PUT("/fb/:orgId/audiences/:customer_group_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fbAud.UpdateCustomAudience)
 
 	r.POST("/campaigns/:orgId/text", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.CreateTextCampaign)
+	r.POST("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.CreateEmailCampaign)
 	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request
@@ -66,5 +67,8 @@ func main() {
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
 	})
 
-	r.Run() // listen and serve on 0.0.0.0:8080
+	err := r.Run()
+	if err != nil {
+		return
+	} // listen and serve on 0.0.0.0:8080
 }

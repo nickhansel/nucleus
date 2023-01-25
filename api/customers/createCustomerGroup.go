@@ -24,7 +24,10 @@ func CreateCustomerGroup(c *gin.Context) {
 	}
 
 	var body Body
-	c.BindJSON(&body)
+	bindErr := c.BindJSON(&body)
+	if bindErr != nil {
+		return
+	}
 
 	if len(body.IDs) == 0 {
 		// abort if the custom audience doesn't exist
@@ -48,7 +51,7 @@ func CreateCustomerGroup(c *gin.Context) {
 	customerGroup.UpdatedAt = time.Now()
 	config.DB.Create(&customerGroup)
 
-	// add all of the customers to the customer group
+	// add all the customers to the customer group
 	for _, customer := range Customers {
 		if customer.OrganizationID == org.ID {
 			// add the customer to the Customers field of the customer group and connect them
@@ -62,7 +65,7 @@ func CreateCustomerGroup(c *gin.Context) {
 	}
 	id := fb.CreateAudience(c, int(customerGroup.ID))
 
-	// update the custoomer group with the facebook audience id
+	// update the customer group with the facebook audience id
 	customerGroup.FbCustomAudienceID = id
 	config.DB.Save(&customerGroup)
 

@@ -24,7 +24,7 @@ func CreateTextCampaign(c *gin.Context) {
 
 	var body Body
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
@@ -37,7 +37,7 @@ func CreateTextCampaign(c *gin.Context) {
 	var CustomersToCustomerGroups []model.CustomersToCustomerGroups
 	// preload the customers that are in the customer group
 	config.DB.Preload("Customer").Find(&CustomersToCustomerGroups)
-	// find all of the customers in the customer group
+	// find all the customers in the customer group
 	var customerGroup model.CustomerGroup
 
 	err := config.DB.First(&customerGroup, body.CustomerGroupID)

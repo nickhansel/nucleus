@@ -4,12 +4,14 @@
 
 package model
 
+import "github.com/lib/pq"
+
 const TableNameEmailCampaign = "EmailCampaign"
 
 // EmailCampaign mapped from table <EmailCampaign>
 type EmailCampaign struct {
 	ID           int32  `gorm:"column:id;primaryKey" json:"id"`
-	TargetEmails string `gorm:"column:target_emails" json:"target_emails"`
+	TargetEmails  pq.StringArray `gorm:"type:varchar(255)[]"  json:"target_emails"`
 	From         string `gorm:"column:from;not null" json:"from"`
 	SendTime     string `gorm:"column:send_time;not null" json:"send_time"`
 	Subject      string `gorm:"column:subject;not null" json:"subject"`

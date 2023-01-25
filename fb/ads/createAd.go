@@ -31,6 +31,7 @@ package fb
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 
 	"net/http"
 
@@ -71,15 +72,26 @@ func createAdCreative(c *gin.Context) (creativeId string) {
 	req.URL.RawQuery = q.Encode()
 
 	client := &http.Client{}
-	respsonse, err := client.Do(req)
+	response, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	defer respsonse.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(response.Body)
 
 	var result map[string]interface{}
-	json.NewDecoder(respsonse.Body).Decode(&result)
+	decodeErr := json.NewDecoder(response.Body).Decode(&result)
+
+	if decodeErr != nil {
+		c.JSON(500, gin.H{
+			"error": "Could not decode response",
+		})
+	}
 
 	c.JSON(200, gin.H{
 		"result": result,
