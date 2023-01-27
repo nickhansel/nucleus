@@ -18,6 +18,7 @@ type EmailCampaign struct {
 	Text         string `gorm:"column:text;not null" json:"text"`
 	HTML         string `gorm:"column:html;not null" json:"html"`
 	CampaignID   int32  `gorm:"column:campaignId;not null" json:"campaignId"`
+	EmailCampaignAnalytics []EmailCampaignAnalytics `gorm:"column:email_campaign_analytics;foreignKey:emailCampaignId;references:ID" json:"email_campaign_analytics"`
 }
 
 // TableName EmailCampaign's table name

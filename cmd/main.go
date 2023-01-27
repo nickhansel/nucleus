@@ -1,7 +1,9 @@
 package main
 
 import (
+	"github.com/nickhansel/nucleus/api/analytics"
 	"github.com/nickhansel/nucleus/config"
+	"github.com/nickhansel/nucleus/cron"
 	"github.com/nickhansel/nucleus/sendinblue"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +27,8 @@ func main() {
 	r := gin.Default()
 
 	config.Connect()
+
+	cron.GetEmailCampaignAnalytics()
 
 	// cron.ScheduleTask("2023-01-22 11:27:10")
 	// 2023-01-13 20:04:27.299298 -0600 CST m=+36.150158126
@@ -59,6 +63,8 @@ func main() {
 
 	r.POST("/campaigns/:orgId/text", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.CreateTextCampaign)
 	r.POST("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.CreateEmailCampaign)
+
+	r.GET("/metrics/:orgId/email/:email_campaign_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetEmailAnalytics)
 	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request

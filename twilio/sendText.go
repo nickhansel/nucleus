@@ -74,8 +74,14 @@ func SendScheduledTexts(TextCampaign model.TextCampaign, org model.Organization)
 		log.Fatal("Error loading .env file for twilio")
 	}
 
-	os.Setenv("TWILIO_ACCOUNT_SID", os.Getenv("TWILIO_ACCOUNT_SID"))
-	os.Setenv("TWILIO_AUTH_TOKEN", os.Getenv("TWILIO_AUTH_TOKEN"))
+	err = os.Setenv("TWILIO_ACCOUNT_SID", os.Getenv("TWILIO_ACCOUNT_SID"))
+	if err != nil {
+		return
+	}
+	err = os.Setenv("TWILIO_AUTH_TOKEN", os.Getenv("TWILIO_AUTH_TOKEN"))
+	if err != nil {
+		return
+	}
 
 	client := twilio.NewRestClient()
 

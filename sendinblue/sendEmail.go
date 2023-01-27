@@ -11,6 +11,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -156,14 +157,20 @@ func SendScheduledEmails(EmailCampaign model.EmailCampaign, org model.Organizati
 				Email string `json:"email"`
 				Name  string `json:"name"`
 			} `json:"to"`
-			Subject     string `json:"subject"`
-			HtmlContent string `json:"htmlContent"`
+			Subject     string   `json:"subject"`
+			HtmlContent string   `json:"htmlContent"`
+			Tags        []string `json:"tags"`
 		}
+
+		//convert the EmailCampaign.ID to a string that is the int32 value
+		idToString := strconv.Itoa(int(EmailCampaign.ID))
+
 		var body Body
 		body.Sender.Name = organization.Name
 		body.Sender.Email = organization.SendinblueEmail
 		body.Subject = EmailCampaign.Subject
 		body.HtmlContent = EmailCampaign.HTML
+		body.Tags = []string{idToString}
 
 		//append Name: name and Email: email to the To array
 		body.To = append(body.To, struct {
