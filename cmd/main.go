@@ -63,6 +63,7 @@ func main() {
 
 	r.POST("/campaigns/:orgId/text", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.CreateTextCampaign)
 	r.POST("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.CreateEmailCampaign)
+	r.GET("/campaigns/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetCampaign)
 
 	r.GET("/metrics/:orgId/email/:email_campaign_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetEmailAnalytics)
 	// r.POST("/aws", aws.UploadImage)

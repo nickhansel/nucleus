@@ -33,36 +33,43 @@ func CreateTextCampaign(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields!"})
 		return
 	}
-
 	var CustomersToCustomerGroups []model.CustomersToCustomerGroups
-	// preload the customers that are in the customer group
-	config.DB.Preload("Customer").Find(&CustomersToCustomerGroups)
+	go func() {
+		// preload the customers that are in the customer group
+		config.DB.Preload("Customer").Find(&CustomersToCustomerGroups)
+	}()
+
 	// find all the customers in the customer group
 	var customerGroup model.CustomerGroup
 
-	err := config.DB.First(&customerGroup, body.CustomerGroupID)
+	go func() {
+		err := config.DB.First(&customerGroup, body.CustomerGroupID)
 
-	if err.Error != nil {
-		c.AbortWithError(http.StatusBadRequest, err.Error)
-		return
-	}
-
-	for _, customerToCustomerGroup := range CustomersToCustomerGroups {
-		if customerToCustomerGroup.B == customerGroup.ID {
-			customerGroup.Customers = append(customerGroup.Customers, customerToCustomerGroup.Customer)
+		if err.Error != nil {
+			c.AbortWithError(http.StatusBadRequest, err.Error)
+			return
 		}
-	}
+	}()
 
+	go func() {
+		for _, customerToCustomerGroup := range CustomersToCustomerGroups {
+			if customerToCustomerGroup.B == customerGroup.ID {
+				customerGroup.Customers = append(customerGroup.Customers, customerToCustomerGroup.Customer)
+			}
+		}
+	}()
 	var TargetCustomers []string
-	for _, customer := range customerGroup.Customers {
-		if customer.PhoneNumber != "" {
-			TargetCustomers = append(TargetCustomers, customer.PhoneNumber)
-			var currentCustomer model.Customer
-			config.DB.First(&currentCustomer, customer.ID)
-			currentCustomer.DatesReceivedSMS = append(currentCustomer.DatesReceivedSMS, time.Now().String())
-			config.DB.Save(&currentCustomer)
+	go func() {
+		for _, customer := range customerGroup.Customers {
+			if customer.PhoneNumber != "" {
+				TargetCustomers = append(TargetCustomers, customer.PhoneNumber)
+				var currentCustomer model.Customer
+				config.DB.First(&currentCustomer, customer.ID)
+				currentCustomer.DatesReceivedSMS = append(currentCustomer.DatesReceivedSMS, time.Now().String())
+				config.DB.Save(&currentCustomer)
+			}
 		}
-	}
+	}()
 
 	var campaign model.Campaign
 	campaign.OrganizationID = org.ID

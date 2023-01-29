@@ -21,8 +21,6 @@ func secondsFromNow(dateString string) int {
 func ScheduleTextTask(Date string, TextCampaign model.TextCampaign, org model.Organization) {
 	scheduler := tasks.New()
 
-	// print scheduled tasks
-
 	howMany := secondsFromNow(Date)
 
 	id, err := scheduler.Add(&tasks.Task{

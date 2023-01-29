@@ -114,16 +114,36 @@ func SendScheduledEmails(EmailCampaign model.EmailCampaign, org model.Organizati
 	var Customers []model.Customer
 
 	//find the customers that are in the target emails
-	var emailAddresses []string
-	for _, v := range EmailCampaign.TargetEmails {
-		emailAddresses = append(emailAddresses, fmt.Sprint(v))
-	}
+	//goroutine to run the two queries at the same time
 
-	config.DB.Where("email_address IN (?)", emailAddresses).Find(&Customers)
-	for _, customer := range Customers {
-		customer.DatesReceivedEmail = append(customer.DatesReceivedEmail, time.Now().Format("2006-01-02 15:04:05"))
-		config.DB.Save(&customer)
-	}
+	//run the two bottom functions at the same time
+	go func() {
+		var emailAddresses []string
+		for _, v := range EmailCampaign.TargetEmails {
+			emailAddresses = append(emailAddresses, fmt.Sprint(v))
+		}
+
+		config.DB.Where("email_address IN (?)", emailAddresses).Find(&Customers)
+
+	}()
+
+	go func() {
+		for _, customer := range Customers {
+			customer.DatesReceivedEmail = append(customer.DatesReceivedEmail, time.Now().Format("2006-01-02 15:04:05"))
+			config.DB.Save(&customer)
+		}
+	}()
+	
+	//var emailAddresses []string
+	//for _, v := range EmailCampaign.TargetEmails {
+	//	emailAddresses = append(emailAddresses, fmt.Sprint(v))
+	//}
+	//
+	//config.DB.Where("email_address IN (?)", emailAddresses).Find(&Customers)
+	//for _, customer := range Customers {
+	//	customer.DatesReceivedEmail = append(customer.DatesReceivedEmail, time.Now().Format("2006-01-02 15:04:05"))
+	//	config.DB.Save(&customer)
+	//}
 
 	apiKey := os.Getenv("SENDINBLUE_API_KEY")
 

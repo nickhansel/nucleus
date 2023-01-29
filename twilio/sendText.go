@@ -35,7 +35,7 @@ func SendTextAPI(c *gin.Context) {
 	var organization model.Organization
 	config.DB.Where("id = ?", org.ID).First(&organization)
 
-	numbers := []string{}
+	var numbers []string
 
 	// get the numbers associated with the customer ids in the to field of the body
 

@@ -14,16 +14,17 @@ type Campaign struct {
 	Type           string  `gorm:"column:type;not null" json:"type"`
 	Budget         float64 `gorm:"column:budget;not null" json:"budget"`
 	OrganizationID int32   `gorm:"column:organizationId;not null" json:"organizationId"`
-	FbCampaign    FbCampaign `gorm:"foreignKey:campaignId;references:ID"`
+	//FbCampaign    FbCampaign `gorm:"foreignKey:campaignId;references:ID" json:"fb_campaign"`
 	Name 		 string `gorm:"column:name;not null" json:"name"`
 	IsFbCampaign bool `gorm:"bool:isFbCampaign;not null" json:"is_fb_campaign"`
 	IsTextCampaign bool `gorm:"bool:isTextCampaign;not null" json:"is_text_campaign"`
 	IsEmailCampaign bool `gorm:"bool:isEmailCampaign;not null" json:"is_email_campaign"`
-
 	CustomerGroupID int32 `gorm:"column:customer_group_id;not null" json:"customer_group_id"`
 	CustomersTargeted int32 `gorm:"column:customers_targeted;not null" json:"customers_targeted"`
 	AttributedRevenue float64 `gorm:"column:attributed_revenue;not null" json:"attributed_revenue"`
 	AttributedConversionCount int32 `gorm:"column:attributed_conversion_count;not null" json:"attributed_conversion_count"`
+	//EmailCampaign EmailCampaign `gorm:"foreignKey:campaignId;references:ID" json:"email_campaign"`
+	//TextCampaign TextCampaign `gorm:"foreignKey:campaignId;references:ID" json:"text_campaign"`
 }
 
 // TableName Campaign's table name
