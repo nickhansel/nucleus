@@ -6,6 +6,7 @@ import (
 	"github.com/nickhansel/nucleus/api/campaigns/text"
 	"github.com/nickhansel/nucleus/config"
 	"github.com/nickhansel/nucleus/cron/email"
+	textCron "github.com/nickhansel/nucleus/cron/text"
 	"github.com/nickhansel/nucleus/sendinblue"
 
 	"github.com/gin-gonic/gin"
@@ -32,6 +33,7 @@ func main() {
 
 	email.GetEmailCampaignAnalytics()
 	email.ScheduleGetEmailBounces()
+	textCron.ScheduleGetTextBounces()
 
 	// cron.ScheduleTask("2023-01-22 11:27:10")
 	// 2023-01-13 20:04:27.299298 -0600 CST m=+36.150158126
@@ -54,6 +56,7 @@ func main() {
 
 	r.POST("/twilio/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.RegisterOrgTwilioNumber)
 	r.POST("/twilio/:orgId/send", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.SendTextAPI)
+	//r.GET("/twilio/:orgId/messages", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), twilio.GetMessages)
 
 	r.POST("/fb/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fb.CreateCampaign)
 	r.POST("/fb/:orgId/adset", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fb.CreateAdSet)
