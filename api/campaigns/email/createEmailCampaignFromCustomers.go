@@ -1,9 +1,9 @@
-package campaign
+package email
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/config"
-	"github.com/nickhansel/nucleus/cron"
+	"github.com/nickhansel/nucleus/cron/email"
 	"github.com/nickhansel/nucleus/model"
 	"net/http"
 	"time"
@@ -125,7 +125,7 @@ func CreateEmailCampaign(c *gin.Context) {
 	}
 
 	// send the email
-	cron.ScheduleEmailTasks(campaignBody.SendTime, EmailCampaign, org)
+	email.ScheduleEmailTasks(campaignBody.SendTime, EmailCampaign, org)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":        "Email campaign created!",

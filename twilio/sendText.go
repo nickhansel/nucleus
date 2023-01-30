@@ -87,6 +87,10 @@ func SendScheduledTexts(TextCampaign model.TextCampaign, org model.Organization)
 
 	organization := org
 
+	if organization.TwilioNumber == "" {
+		return
+	}
+
 	numbers := TextCampaign.TargetNumbers
 	body := TextCampaign
 
@@ -99,7 +103,7 @@ func SendScheduledTexts(TextCampaign model.TextCampaign, org model.Organization)
 		resp, err := client.Api.CreateMessage(params)
 
 		if err != nil || resp.ErrorCode != nil {
-			log.Fatal(err)
+			return
 		}
 	}
 }

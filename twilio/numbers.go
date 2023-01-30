@@ -99,6 +99,14 @@ func addNumberToDB(phoneNumber string, c *gin.Context) {
 }
 
 func RegisterOrgTwilioNumber(c *gin.Context) {
+	org := c.MustGet("orgs").(model.Organization)
+	if org.IsTwilioAuthed || org.TwilioNumber != "" {
+		c.JSON(400, gin.H{
+			"message": "Organization already has a phone number",
+		})
+		return
+	}
+
 	// get the area code from the url params
 	areaCode := c.Query("area_code")
 	// convert the area code to an int

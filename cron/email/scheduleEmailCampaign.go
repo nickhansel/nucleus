@@ -1,4 +1,4 @@
-package cron
+package email
 
 import (
 	"time"
@@ -10,6 +10,13 @@ import (
 	model "github.com/nickhansel/nucleus/model"
 	sendinblue "github.com/nickhansel/nucleus/sendinblue"
 )
+
+func secondsFromNow(dateString string) int {
+	layout := "2006-01-02 15:04:05"
+	t, _ := time.ParseInLocation(layout, dateString, time.Local)
+	fmt.Println(t, t.Sub(time.Now()).Seconds())
+	return int(t.Sub(time.Now()).Seconds())
+}
 
 func ScheduleEmailTasks(Date string, EmailCampaign model.EmailCampaign, org model.Organization) {
 	scheduler := tasks.New()

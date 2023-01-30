@@ -1,12 +1,12 @@
-package campaign
+package text
 
 import (
+	cron "github.com/nickhansel/nucleus/cron/text"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/config"
-	cron "github.com/nickhansel/nucleus/cron"
 	"github.com/nickhansel/nucleus/model"
 )
 
@@ -22,9 +22,14 @@ type Body struct {
 func CreateTextCampaign(c *gin.Context) {
 	org := c.MustGet("orgs").(model.Organization)
 
+	if org.TwilioNumber == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "You must have a twilio number to send text campaigns!"})
+		return
+	}
+
 	var body Body
 	if err := c.ShouldBindJSON(&body); err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -46,7 +51,7 @@ func CreateTextCampaign(c *gin.Context) {
 		err := config.DB.First(&customerGroup, body.CustomerGroupID)
 
 		if err.Error != nil {
-			c.AbortWithError(http.StatusBadRequest, err.Error)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Customer group not found!"})
 			return
 		}
 	}()
