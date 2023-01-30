@@ -31,6 +31,7 @@ func main() {
 	config.Connect()
 
 	email.GetEmailCampaignAnalytics()
+	email.ScheduleGetEmailBounces()
 
 	// cron.ScheduleTask("2023-01-22 11:27:10")
 	// 2023-01-13 20:04:27.299298 -0600 CST m=+36.150158126

@@ -33,7 +33,8 @@ type Customer struct {
 	Locality                     string  `gorm:"column:locality" json:"locality"`
 	PostalCode                   string  `gorm:"column:postal_code" json:"postal_code"`
 	CustomerGroup []CustomerGroup `gorm:"foreignKey:ID;references:ID" json:"customers"`
-	
+	IsEmailDeliverable bool `gorm:"column:is_email_deliverable" json:"is_email_deliverable"`
+	IsSMSDeliverable bool `gorm:"column:is_sms_deliverable" json:"is_sms_deliverable"`
 	DatesReceivedEmail  pq.StringArray `gorm:"type:varchar(255)[]" json:"dates_received_email"`
 	DatesReceivedSMS  pq.StringArray `gorm:"type:varchar(255)[]" json:"dates_received_sms"`
 }
