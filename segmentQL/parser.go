@@ -7,13 +7,7 @@ import (
 	"time"
 )
 
-// takes in a string like select * from customers where AMOUNT_SPENT > 1000 AND PURHCASED_PRODUCTS IN ('Bike', 'Car') AND DATE_RANGE BETWEEN '2018-01-01' AND '2018-12-31'
-
-//func ParseSegmentQL(query string) string {
-//
-//}
-
-func FindCustomersWhoPurchasedItem(item int32, orgId int32, startDate string, endDate string, minPurchasePrice float64, maxPurchasePrice float64) []int32 {
+func ParseSegmentQL(item int32, orgId int32, startDate string, endDate string, minPurchasePrice float64, maxPurchasePrice float64) []int32 {
 	// find all customers who have a purchase with PurchasedItems.Variation.ID = item
 	// return a slice of customer IDs
 	// get all purchases
@@ -121,7 +115,7 @@ func FindCustomersWhoPurchasedItem(item int32, orgId int32, startDate string, en
 			customerIDs = append(customerIDs, customer.ID)
 		}
 	}
-	
+
 	return customerIDs
 }
 

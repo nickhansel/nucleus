@@ -6,6 +6,7 @@ import (
 	"github.com/nickhansel/nucleus/config"
 	"github.com/nickhansel/nucleus/model"
 	twilio "github.com/nickhansel/nucleus/twilio"
+	"time"
 )
 
 //TODO: Get text bounces from Twilio and update the database field is_sms_deliverable https://www.twilio.com/docs/sms/tutorials/how-to-confirm-delivery-python
@@ -16,7 +17,7 @@ func ScheduleGetTextBounces() {
 
 	id, err := scheduler.Add(&tasks.Task{
 		//interval is every 1.3 hours
-		Interval: 46800,
+		Interval: time.Duration(1.3 * float64(time.Hour)),
 		RunOnce:  false,
 		TaskFunc: func() error {
 			var customers []model.Customer

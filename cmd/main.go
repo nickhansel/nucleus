@@ -2,10 +2,12 @@ package main
 
 import (
 	"github.com/nickhansel/nucleus/api/analytics"
+	email3 "github.com/nickhansel/nucleus/api/analytics/email"
 	email2 "github.com/nickhansel/nucleus/api/campaigns/email"
 	"github.com/nickhansel/nucleus/api/campaigns/text"
 	"github.com/nickhansel/nucleus/config"
-	"github.com/nickhansel/nucleus/segmentQL"
+	"github.com/nickhansel/nucleus/cron/email"
+	textCron "github.com/nickhansel/nucleus/cron/text"
 	"github.com/nickhansel/nucleus/sendinblue"
 
 	"github.com/gin-gonic/gin"
@@ -30,11 +32,10 @@ func main() {
 
 	config.Connect()
 
-	//email.GetEmailCampaignAnalytics()
-	//email.ScheduleGetEmailBounces()
-	//textCron.ScheduleGetTextBounces()
+	email.GetEmailCampaignAnalytics()
+	email.ScheduleGetEmailBounces()
+	textCron.ScheduleGetTextBounces()
 
-	segmentQL.FindCustomersWhoPurchasedItem(4, 19, "", "", 0, 0)
 	//segmentQL.FindCustomersWhoPurchasedItem(4, 19, "", "", 14, 0)
 
 	// cron.ScheduleTask("2023-01-22 11:27:10")
@@ -74,7 +75,8 @@ func main() {
 	r.POST("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email2.CreateEmailCampaign)
 	r.GET("/campaigns/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetCampaign)
 
-	r.GET("/metrics/:orgId/email/:email_campaign_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetEmailAnalytics)
+	r.GET("/metrics/:orgId/email/:email_campaign_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email3.GetEmailAnalytics)
+	r.GET("/metrics/:orgId/totals", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetTotalRevenue)
 	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request
