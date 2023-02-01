@@ -5,6 +5,7 @@ package fb
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"io/ioutil"
 
 	"bytes"
@@ -129,7 +130,7 @@ type AudiencePayload struct {
 	Data   [][]string `json:"data"`
 }
 
-func CreateAudience(c *gin.Context, customerGroupID int) (returnId string) {
+func CreateAudience(c *gin.Context, customerGroupID int) (returnId string, err error) {
 	customerGroup, org := GetCustomersGroupByIDS(c, customerGroupID)
 
 	customAudienceId := Create(c, customerGroup.FbCustomAudienceID, customerGroup.Name, org.FbAccessToken, org.FbAdAccountID)
@@ -137,7 +138,7 @@ func CreateAudience(c *gin.Context, customerGroupID int) (returnId string) {
 	// check if the custom audience exists
 	if customAudienceId == "" {
 		// abort if the custom audience doesn't exist
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Custom audience not found!"})
+		return
 	}
 
 	// get the customers from the customer group
@@ -172,7 +173,6 @@ func CreateAudience(c *gin.Context, customerGroupID int) (returnId string) {
 	// make the request
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -189,8 +189,7 @@ func CreateAudience(c *gin.Context, customerGroupID int) (returnId string) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		return "", errors.New("error")
 	}
 
 	defer resp.Body.Close()
@@ -198,5 +197,9 @@ func CreateAudience(c *gin.Context, customerGroupID int) (returnId string) {
 	var result map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&result)
 
-	return customAudienceId
+	if result["error"] != nil {
+		return "", errors.New("error")
+	}
+
+	return customAudienceId, nil
 }

@@ -5,8 +5,7 @@ import (
 	email2 "github.com/nickhansel/nucleus/api/campaigns/email"
 	"github.com/nickhansel/nucleus/api/campaigns/text"
 	"github.com/nickhansel/nucleus/config"
-	"github.com/nickhansel/nucleus/cron/email"
-	textCron "github.com/nickhansel/nucleus/cron/text"
+	"github.com/nickhansel/nucleus/segmentQL"
 	"github.com/nickhansel/nucleus/sendinblue"
 
 	"github.com/gin-gonic/gin"
@@ -31,9 +30,12 @@ func main() {
 
 	config.Connect()
 
-	email.GetEmailCampaignAnalytics()
-	email.ScheduleGetEmailBounces()
-	textCron.ScheduleGetTextBounces()
+	//email.GetEmailCampaignAnalytics()
+	//email.ScheduleGetEmailBounces()
+	//textCron.ScheduleGetTextBounces()
+
+	segmentQL.FindCustomersWhoPurchasedItem(4, 19, "", "", 0, 0)
+	//segmentQL.FindCustomersWhoPurchasedItem(4, 19, "", "", 14, 0)
 
 	// cron.ScheduleTask("2023-01-22 11:27:10")
 	// 2023-01-13 20:04:27.299298 -0600 CST m=+36.150158126
@@ -47,6 +49,7 @@ func main() {
 	r.GET("/customers/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.GetCustomers)
 	// r.POST("/work", customers.CreateCustomerGroup)
 	r.POST("/customers/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.CreateCustomerGroup)
+	r.POST("/ql/:orgId/", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.CreateCustomerGroupSegmentQL)
 	r.GET("/customers/:orgId/groups/:groupId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.GetCustomerGroup)
 
 	r.GET("/purchases/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), transactions.GetPurchases)

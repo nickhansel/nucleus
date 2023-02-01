@@ -24,6 +24,7 @@ type Purchase struct {
 	Location   StoreLocation `gorm:"foreignKey:LocationID;references:ID"`
 	AttributedCampaign Campaign `gorm:"foreignKey:AttributedCampaignID;references:ID"`
 	AttributedCampaignID int32 `gorm:"column:attributedCampaignId;not null" json:"attributedCampaignId"`
+	Customer  Customer `gorm:"foreignKey:CustomerID;references:ID"`
 }
 
 // TableName Purchase's table name

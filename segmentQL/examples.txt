@@ -1,0 +1,14 @@
+INPUT:
+select * from customers where PURHCASED_PRODUCT = 'Bike'
+select * from customers where PURHCASED_PRODUCTS IN ('Bike', 'Car')
+select * from customers where AMOUNT_SPENT > 1000
+select * from customers where AMOUNT_SPENT BETWEEN 1000 AND 2000
+select * from customers where AMOUNT_SPENT BETWEEN 1000 AND 2000 AND PURHCASED_PRODUCTS IN ('Bike', 'Car')
+select * from customers where AMOUNT_SPENT > 1000 AND PURHCASED_PRODUCTS IN ('Bike', 'Car') AND DATE_RANGE BETWEEN '2018-01-01' AND '2018-12-31'
+
+
+RESERVED KEYWORDS: PURCHASED_PRODUCT, PURCHASED_PRODUCTS, AMOUNT_SPENT, DATE_RANGE
+
+[["AMOUNT_SPENT", ">", "100"], ["PURCHASED_PRODUCTS", "IN", "('Tea', 'Coffee')], ["created_at", ">" "NOW"]]
+
+select * from customers where "total_spent" > 100 AND (select * from products where "name" IN ('Tea', 'Coffee')) AND "created_at" > NOW()
