@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/config"
 	"github.com/nickhansel/nucleus/model"
+	"time"
 )
 
 type FlowBody struct {
@@ -29,6 +30,8 @@ func CreateFlow(c *gin.Context) {
 	flow.Name = flowBody.Name
 	flow.CustomerGroupID = flowBody.CustomerGroupID
 	flow.OrganizationID = org.ID
+	flow.Status = "ACTIVE"
+	flow.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
 
 	if err := config.DB.Create(&flow).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})

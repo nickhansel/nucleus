@@ -8,6 +8,8 @@ type Flow struct {
 	Trigger         []Trigger `gorm:"foreignKey:FlowID;references:ID" json:"trigger"`
 	OrganizationID  int32     `gorm:"column:organizationId;not null" json:"organizationId"`
 	CustomerGroupID int32     `gorm:"column:customer_groupId;not null" json:"customer_groupId"`
+	Status          string    `gorm:"column:status;not null" json:"status"`
+	CreatedAt       string    `gorm:"column:created_at;not null" json:"created_at"`
 }
 
 // TableName FbTarget's table name

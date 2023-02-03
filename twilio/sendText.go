@@ -108,3 +108,49 @@ func SendScheduledTexts(TextCampaign model.TextCampaign, org model.Organization)
 		}
 	}
 }
+
+func SendFlowTexts(ids []int32, org model.Organization, textBody string) {
+	err := godotenv.Load("../.env")
+
+	if err != nil {
+		log.Fatal("Error loading .env file for twilio")
+	}
+
+	err = os.Setenv("TWILIO_ACCOUNT_SID", os.Getenv("TWILIO_ACCOUNT_SID"))
+	if err != nil {
+		return
+	}
+	err = os.Setenv("TWILIO_AUTH_TOKEN", os.Getenv("TWILIO_AUTH_TOKEN"))
+	if err != nil {
+		return
+	}
+
+	client := twilio.NewRestClient()
+
+	organization := org
+
+	if organization.TwilioNumber == "" {
+		return
+	}
+
+	var numbers []string
+	var customers []model.Customer
+	config.DB.Where("id IN ?", ids).Find(&customers)
+
+	for _, customer := range customers {
+		numbers = append(numbers, customer.PhoneNumber)
+	}
+
+	for index := range numbers {
+		params := &api.CreateMessageParams{}
+		params.SetBody(textBody)
+		params.SetFrom(organization.TwilioNumber)
+		params.SetTo(numbers[index])
+
+		resp, err := client.Api.CreateMessage(params)
+
+		if err != nil || resp.ErrorCode != nil {
+			return
+		}
+	}
+}
