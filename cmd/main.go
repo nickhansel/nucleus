@@ -11,7 +11,6 @@ import (
 	"github.com/nickhansel/nucleus/sendinblue"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/nickhansel/nucleus/api"
 	"github.com/nickhansel/nucleus/api/auth"
 	campaign "github.com/nickhansel/nucleus/api/campaigns"
 	"github.com/nickhansel/nucleus/api/customers"
@@ -19,10 +18,10 @@ import (
 	org "github.com/nickhansel/nucleus/api/organization"
 	"github.com/nickhansel/nucleus/api/transactions"
 
-	// "github.com/nickhansel/nucleus/cron"
 	fbAcc "github.com/nickhansel/nucleus/fb/account"
 	fb "github.com/nickhansel/nucleus/fb/ads"
 	fbAud "github.com/nickhansel/nucleus/fb/audiences"
+	"github.com/nickhansel/nucleus/flows"
 	"github.com/nickhansel/nucleus/twilio"
 )
 
@@ -36,11 +35,6 @@ func main() {
 	email.ScheduleGetEmailBounces()
 	textCron.ScheduleGetTextBounces()
 
-	//segmentQL.FindCustomersWhoPurchasedItem(4, 19, "", "", 14, 0)
-
-	// cron.ScheduleTask("2023-01-22 11:27:10")
-	// 2023-01-13 20:04:27.299298 -0600 CST m=+36.150158126
-	// pass middleware.JWT() to the r.Use function to use the middleware
 	r.GET("/login", auth.LoginUser)
 
 	r.POST("/organization", middleware.JwtAuthMiddleware(), org.CreateOrg)
@@ -79,6 +73,8 @@ func main() {
 	r.GET("/metrics/:orgId/email/:email_campaign_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email3.GetEmailAnalytics)
 	r.GET("/metrics/:orgId/totals", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetTotalRevenue)
 	r.GET("/metrics/:orgId/item", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetReveneuByItem)
+
+	r.POST("/flows/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), flows.CreateFlow)
 	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request
