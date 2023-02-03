@@ -74,9 +74,11 @@ func main() {
 	r.POST("/campaigns/:orgId/text", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), text.CreateTextCampaign)
 	r.POST("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email2.CreateEmailCampaign)
 	r.GET("/campaigns/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetCampaign)
+	r.GET("/campaigns/:orgId/all", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetAllCampaigns)
 
 	r.GET("/metrics/:orgId/email/:email_campaign_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email3.GetEmailAnalytics)
 	r.GET("/metrics/:orgId/totals", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetTotalRevenue)
+	r.GET("/metrics/:orgId/item", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetReveneuByItem)
 	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request

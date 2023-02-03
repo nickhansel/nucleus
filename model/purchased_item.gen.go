@@ -17,7 +17,7 @@ type PurchasedItem struct {
 	IsVaration  bool    `gorm:"column:is_varation;not null" json:"is_varation"`
 	VariationID int32   `gorm:"column:variationId" json:"variationId"`
 	// variations is a relation to table <variations>
-	Variation Variation `gorm:"foreignKey:VariationID;references:ID"`
+	Variation Variation `gorm:"foreignKey:VariationID;references:ID" json:"variation"`
 }
 
 // TableName PurchasedItem's table name
