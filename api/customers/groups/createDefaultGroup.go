@@ -1,4 +1,4 @@
-package customers
+package groups
 
 import (
 	"net/http"

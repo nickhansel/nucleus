@@ -1,48 +1,35 @@
-package customers
+package groups
 
 import (
+	"net/http"
+
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/config"
 	fb "github.com/nickhansel/nucleus/fb/audiences"
 	"github.com/nickhansel/nucleus/model"
-	"github.com/nickhansel/nucleus/segmentQL"
-	"net/http"
-	"time"
 )
 
-type SegmentQLRequestBody struct {
-	ItemID           int     `json:"item_id"`
-	StartDate        string  `json:"start_date"`
-	EndDate          string  `json:"end_date"`
-	MinPurchasePrice float64 `json:"min_purchase_price"`
-	MaxPurchasePrice float64 `json:"max_purchase_price"`
-	Name             string  `json:"name"`
+type Body struct {
+	IDs  []int  `json:"ids"`
+	Name string `json:"name"`
 }
 
-func CreateCustomerGroupSegmentQL(c *gin.Context) {
+func CreateCustomerGroup(c *gin.Context) {
 	org := c.MustGet("orgs").(model.Organization)
 	if org.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
 		return
 	}
 
-	query := SegmentQLRequestBody{}
-	err := c.BindJSON(&query)
-	if err != nil {
+	var body Body
+	bindErr := c.BindJSON(&body)
+	if bindErr != nil {
 		return
 	}
 
-	ql := segmentQL.ParseSegmentQL(int32(query.ItemID), org.ID, query.StartDate, query.EndDate, query.MinPurchasePrice, query.MaxPurchasePrice)
-
-	var body Body
-	//convert the query to a slice of ints
-	for _, id := range ql {
-		body.IDs = append(body.IDs, int(id))
-	}
-
-	body.Name = query.Name
-
-	if len(ql) == 0 {
+	if len(body.IDs) == 0 {
 		// abort if the custom audience doesn't exist
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No customers selected!"})
 		return
@@ -50,7 +37,7 @@ func CreateCustomerGroupSegmentQL(c *gin.Context) {
 
 	var Customers []model.Customer
 	// find customers with the ids in the body
-	err = config.DB.Where("id IN (?)", body.IDs).Find(&Customers).Error
+	err := config.DB.Where("id IN (?)", body.IDs).Find(&Customers).Error
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
@@ -78,7 +65,6 @@ func CreateCustomerGroupSegmentQL(c *gin.Context) {
 	}
 	id, err := fb.CreateAudience(c, int(customerGroup.ID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

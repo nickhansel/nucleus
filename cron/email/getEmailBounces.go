@@ -60,7 +60,7 @@ func ScheduleGetEmailBounces() {
 	scheduler := tasks.New()
 
 	id, err := scheduler.Add(&tasks.Task{
-		Interval: time.Duration(1) * time.Hour,
+		Interval: time.Duration(1)*time.Hour + time.Duration(3)*time.Minute,
 		RunOnce:  false,
 		TaskFunc: func() error {
 			bounces, err := GetEmailBounces()

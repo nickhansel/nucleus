@@ -15,9 +15,11 @@ import (
 func ScheduleGetTextBounces() {
 	scheduler := tasks.New()
 
+	duration := time.Duration(1)*time.Hour + time.Duration(32)*time.Minute
+
 	id, err := scheduler.Add(&tasks.Task{
 		//interval is every 1.3 hours
-		Interval: time.Duration(1.3 * float64(time.Hour)),
+		Interval: duration,
 		RunOnce:  false,
 		TaskFunc: func() error {
 			var customers []model.Customer
