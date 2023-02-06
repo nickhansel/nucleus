@@ -10,6 +10,7 @@ type Flow struct {
 	CustomerGroupID int32     `gorm:"column:customer_groupId;not null" json:"customer_groupId"`
 	Status          string    `gorm:"column:status;not null" json:"status"`
 	CreatedAt       string    `gorm:"column:created_at;not null" json:"created_at"`
+	SmartSending    bool      `gorm:"column:smart_sending;not null" json:"smart_sending"`
 }
 
 // TableName FbTarget's table name

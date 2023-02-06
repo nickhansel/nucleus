@@ -3,6 +3,7 @@ package twilio
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -40,12 +41,19 @@ func SendTextAPI(c *gin.Context) {
 	// get the numbers associated with the customer ids in the to field of the body
 
 	var body Body
-	c.BindJSON(&body)
+	err = c.BindJSON(&body)
+	if err != nil {
+		return
+	}
 
 	for _, number := range body.To {
 		var customer model.Customer
 		config.DB.Where("id = ?", number).First(&customer)
+		if customer.PhoneNumber == "" {
+			return
+		}
 		numbers = append(numbers, customer.PhoneNumber)
+		customer.DatesReceivedSMS = append(customer.DatesReceivedSMS, time.Now().Format("2006-01-02 15:04:05"))
 	}
 
 	for index := range body.To {
@@ -137,8 +145,14 @@ func SendFlowTexts(ids []int32, org model.Organization, textBody string) {
 	var customers []model.Customer
 	config.DB.Where("id IN ?", ids).Find(&customers)
 
+	timeNowString := time.Now().Format("2006-01-02 15:04:05")
+
 	for _, customer := range customers {
 		numbers = append(numbers, customer.PhoneNumber)
+		var customerTarget model.Customer
+		config.DB.Where("id = ?", customer.ID).First(&customerTarget)
+		customerTarget.DatesReceivedSMS = append(customerTarget.DatesReceivedSMS, timeNowString)
+		config.DB.Save(&customerTarget)
 	}
 
 	for index := range numbers {

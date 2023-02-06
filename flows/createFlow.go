@@ -16,6 +16,7 @@ type FlowBody struct {
 	SmsBody         string `json:"sms_body"`
 	EmailSubject    string `json:"email_subject"`
 	EmailBody       string `json:"email_body"`
+	SmartSending    bool   `json:"smart_sending"`
 }
 
 func CreateFlow(c *gin.Context) {
@@ -32,6 +33,7 @@ func CreateFlow(c *gin.Context) {
 	flow.OrganizationID = org.ID
 	flow.Status = "ACTIVE"
 	flow.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
+	flow.SmartSending = flowBody.SmartSending
 
 	if err := config.DB.Create(&flow).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
