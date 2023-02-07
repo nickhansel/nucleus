@@ -34,6 +34,7 @@ func CreateFlow(c *gin.Context) {
 	flow.Status = "ACTIVE"
 	flow.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
 	flow.SmartSending = flowBody.SmartSending
+	flow.MessageType = flowBody.ActionType
 
 	if err := config.DB.Create(&flow).Error; err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})

@@ -11,6 +11,7 @@ type Flow struct {
 	Status          string    `gorm:"column:status;not null" json:"status"`
 	CreatedAt       string    `gorm:"column:created_at;not null" json:"created_at"`
 	SmartSending    bool      `gorm:"column:smart_sending;not null" json:"smart_sending"`
+	MessageType     string    `gorm:"column:message_type;not null" json:"message_type"`
 }
 
 // TableName FbTarget's table name
