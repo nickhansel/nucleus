@@ -8,8 +8,8 @@ const TableNameItemsTostoreLocation = "_ItemsTostore_location"
 
 // ItemsTostoreLocation mapped from table <_ItemsTostore_location>
 type ItemsTostoreLocation struct {
-	B int32 `gorm:"column:B;not null" json:"B"`
-	A int32 `gorm:"column:A;not null" json:"A"`
+	B int64 `gorm:"column:B;not null" json:"B"`
+	A int64 `gorm:"column:A;not null" json:"A"`
 }
 
 // TableName ItemsTostoreLocation's table name

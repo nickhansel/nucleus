@@ -10,14 +10,14 @@ const TableNameEmailCampaign = "EmailCampaign"
 
 // EmailCampaign mapped from table <EmailCampaign>
 type EmailCampaign struct {
-	ID           int32  `gorm:"column:id;primaryKey" json:"id"`
+	ID           int64  `gorm:"column:id;primaryKey" json:"id"`
 	TargetEmails  pq.StringArray `gorm:"type:varchar(255)[]"  json:"target_emails"`
 	From         string `gorm:"column:from;not null" json:"from"`
 	SendTime     string `gorm:"column:send_time;not null" json:"send_time"`
 	Subject      string `gorm:"column:subject;not null" json:"subject"`
 	Text         string `gorm:"column:text;not null" json:"text"`
 	HTML         string `gorm:"column:html;not null" json:"html"`
-	CampaignID   int32  `gorm:"column:campaignId;not null" json:"campaignId"`
+	CampaignID   int64  `gorm:"column:campaignId;not null" json:"campaignId"`
 	EmailCampaignAnalytics []EmailCampaignAnalytics `gorm:"column:email_campaign_analytics;foreignKey:emailCampaignId;references:ID" json:"email_campaign_analytics"`
 }
 

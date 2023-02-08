@@ -8,8 +8,8 @@ const TableNameItemsToitemCategory = "_ItemsToitem_category"
 
 // ItemsToitemCategory mapped from table <_ItemsToitem_category>
 type ItemsToitemCategory struct {
-	A int32 `gorm:"column:A;not null" json:"A"`
-	B int32 `gorm:"column:B;not null" json:"B"`
+	A int64 `gorm:"column:A;not null" json:"A"`
+	B int64 `gorm:"column:B;not null" json:"B"`
 }
 
 // TableName ItemsToitemCategory's table name

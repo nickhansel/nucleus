@@ -10,12 +10,12 @@ const TableNameTextCampaign = "text_campaign"
 
 // TextCampaign mapped from table <text_campaign>
 type TextCampaign struct {
-	ID            int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	ID            int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	TargetNumbers pq.StringArray `gorm:"type:varchar(255)[]" json:"target_numbers"`
 	From          string `gorm:"column:from;not null" json:"from"`
 	SendTime      string `gorm:"column:send_time;not null" json:"send_time"`
 	Body          string `gorm:"column:body;not null" json:"body"`
-	CampaignID    int32  `gorm:"column:campaignId;not null" json:"campaignId"`
+	CampaignID    int64  `gorm:"column:campaignId;not null" json:"campaignId"`
 	Name 		string `gorm:"column:name;not null" json:"name"`
 }
 

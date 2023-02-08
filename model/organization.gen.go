@@ -15,7 +15,7 @@ type MultiString []string
 
 // Organization mapped from table <Organization>
 type Organization struct {
-	ID                int32     `gorm:"column:id;primaryKey" json:"id"`
+	ID                int64     `gorm:"column:id;primaryKey" json:"id"`
 	FbAdAccountID	 string     `gorm:"column:fb_ad_account_id;" json:"fb_ad_account_id"`
 	FbAccessToken	 string    `gorm:"column:fb_access_token;" json:"fb_access_token"`
 	FbPageID		 string    `gorm:"column:fb_page_id;" json:"fb_page_id"`
@@ -32,7 +32,7 @@ type Organization struct {
 	IsSendinblueAuthed  bool      `gorm:"column:is_sendinblue_authed;not null" json:"is_sendinblue_authed"`
 	IsTwilioAuthed    bool      `gorm:"column:is_twilio_authed;not null" json:"is_twilio_authed"`
 	Plan              int32     `gorm:"column:plan;not null" json:"plan"`
-	PosID             int32     `gorm:"column:posId;not null" json:"posId"`
+	PosID             int64     `gorm:"column:posId;not null" json:"posId"`
 	SendgridEmail     string    `gorm:"column:sendgrid_email;not null" json:"sendgrid_email"`
 	TwilioNumber      string    `gorm:"column:twilio_number;not null" json:"twilio_number"`
 	Type              string    `gorm:"column:type;not null" json:"type"`

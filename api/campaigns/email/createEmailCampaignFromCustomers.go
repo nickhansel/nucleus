@@ -16,7 +16,7 @@ type EmailCampaignBody struct {
 	SendTime        string  `json:"send_time"`
 	Subject         string  `json:"subject"`
 	HtmlContent     string  `json:"htmlContent"`
-	CustomerGroupID int32   `json:"customer_group_id"`
+	CustomerGroupID int64   `json:"customer_group_id"`
 }
 
 type EmailBody struct {

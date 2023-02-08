@@ -15,11 +15,11 @@ type Item struct {
 	Name                  string `gorm:"column:name;not null" json:"name"`
 	Description           string `gorm:"column:description;not null" json:"description"`
 	ProductType           string `gorm:"column:product_type;not null" json:"product_type"`
-	PurchaseID            int32  `gorm:"column:purchaseId" json:"purchaseId"`
-	OrganizationID        int32  `gorm:"column:organizationId;not null" json:"organizationId"`
+	PurchaseID            int64  `gorm:"column:purchaseId" json:"purchaseId"`
+	OrganizationID        int64  `gorm:"column:organizationId;not null" json:"organizationId"`
 	IsDeleted             bool   `gorm:"column:isDeleted;not null" json:"isDeleted"`
 	ItemID                string `gorm:"column:item_id;not null" json:"item_id"`
-	ID                    int32  `gorm:"column:id;primaryKey" json:"id"`
+	ID                    int64  `gorm:"column:id;primaryKey" json:"id"`
 	CategoryID            string `gorm:"column:category_id" json:"category_id"`
 }
 

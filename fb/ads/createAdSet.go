@@ -18,7 +18,7 @@ type AdsetBody struct {
 	BidAmount        int    `json:"bid_amount"`
 	DailyBudget      int    `json:"daily_budget"`
 	CampaignId       string `json:"campaign_id"`
-	FbCampaignId     int32  `json:"fb_campaign_id"`
+	FbCampaignId     int64  `json:"fb_campaign_id"`
 	Status           string `json:"status"`
 	StartTime        string `json:"start_time"`
 	EndTime          string `json:"end_time"`

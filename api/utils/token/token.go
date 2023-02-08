@@ -12,7 +12,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func GenerateAccessToken(user_id int32) (string, error) {
+func GenerateAccessToken(user_id int64) (string, error) {
 
 	err := godotenv.Load("../../.env")
 
@@ -23,7 +23,7 @@ func GenerateAccessToken(user_id int32) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["type"] = "access"
-	claims["user_id"] = user_id
+	claims["user_id"] = strconv.FormatInt(user_id, 10)
 	// // exp date that expires in 1 hour
 	// claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
 	// exp date that expires in 20 years
@@ -34,7 +34,7 @@ func GenerateAccessToken(user_id int32) (string, error) {
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }
 
-func GenerateRefreshToken(user_id int32) (string, error) {
+func GenerateRefreshToken(user_id int64) (string, error) {
 
 	err := godotenv.Load("../../.env")
 
@@ -45,7 +45,8 @@ func GenerateRefreshToken(user_id int32) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["type"] = "access"
-	claims["user_id"] = user_id
+	claims["user_id"] = strconv.FormatInt(user_id, 10)
+
 	// exp date that expires in 30 days
 	claims["exp"] = time.Now().Add(time.Hour * 24 * 30).Unix()
 
@@ -64,6 +65,7 @@ func TokenValid(c *gin.Context) error {
 
 	// validate the token by getting the token string from the header
 	tokenString := ExtractToken(c)
+	fmt.Println(tokenString)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -102,7 +104,7 @@ func ExtractToken(c *gin.Context) string {
 	return strArr[1]
 }
 
-func ExtractTokenID(c *gin.Context) (int32, error) {
+func ExtractTokenID(c *gin.Context) (int64, error) {
 
 	err := godotenv.Load("../../.env")
 
@@ -122,11 +124,14 @@ func ExtractTokenID(c *gin.Context) (int32, error) {
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		uid, err := strconv.ParseInt(fmt.Sprintf("%.f", claims["user_id"]), 10, 32)
+		// make claims["user_id"] a big int and it is currently a string
+		cast := fmt.Sprintf("%v", claims["user_id"])
+
+		uid, err := strconv.Atoi(cast)
 		if err != nil {
 			return 0, err
 		}
-		return int32(uid), nil
+		return int64(uid), nil
 	}
 	return 0, nil
 }

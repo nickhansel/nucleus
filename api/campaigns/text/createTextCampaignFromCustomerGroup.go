@@ -1,8 +1,10 @@
 package text
 
 import (
+	"fmt"
 	cron "github.com/nickhansel/nucleus/cron/text"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +18,7 @@ type Body struct {
 	Name            string  `json:"name"`
 	SendTime        string  `json:"send_time"`
 	TextBody        string  `json:"text_body"`
-	CustomerGroupID int32   `json:"customer_group_id"`
+	CustomerGroupID int64   `json:"customer_group_id"`
 }
 
 func CreateTextCampaign(c *gin.Context) {
@@ -39,42 +41,40 @@ func CreateTextCampaign(c *gin.Context) {
 		return
 	}
 	var CustomersToCustomerGroups []model.CustomersToCustomerGroups
-	go func() {
-		// preload the customers that are in the customer group
-		config.DB.Preload("Customer").Find(&CustomersToCustomerGroups)
-	}()
+	// preload the customers that are in the customer group
+	config.DB.Preload("Customer").Find(&CustomersToCustomerGroups)
 
 	// find all the customers in the customer group
 	var customerGroup model.CustomerGroup
 
-	go func() {
-		err := config.DB.First(&customerGroup, body.CustomerGroupID)
-
-		if err.Error != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Customer group not found!"})
-			return
+	err := config.DB.First(&customerGroup, body.CustomerGroupID)
+	if err.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Customer group not found!"})
+		return
+	}
+	fmt.Println(customerGroup, "customer group")
+	for _, customerToCustomerGroup := range CustomersToCustomerGroups {
+		fmt.Println(customerToCustomerGroup.Customer.PhoneNumber, "customer group1")
+		if customerToCustomerGroup.B == customerGroup.ID {
+			customerGroup.Customers = append(customerGroup.Customers, customerToCustomerGroup.Customer)
 		}
-	}()
-
-	go func() {
-		for _, customerToCustomerGroup := range CustomersToCustomerGroups {
-			if customerToCustomerGroup.B == customerGroup.ID {
-				customerGroup.Customers = append(customerGroup.Customers, customerToCustomerGroup.Customer)
-			}
-		}
-	}()
+	}
 	var TargetCustomers []string
-	go func() {
-		for _, customer := range customerGroup.Customers {
-			if customer.PhoneNumber != "" {
-				TargetCustomers = append(TargetCustomers, customer.PhoneNumber)
-				var currentCustomer model.Customer
-				config.DB.First(&currentCustomer, customer.ID)
-				currentCustomer.DatesReceivedSMS = append(currentCustomer.DatesReceivedSMS, time.Now().String())
-				config.DB.Save(&currentCustomer)
-			}
+	for _, customer := range customerGroup.Customers {
+		fmt.Println(customer, "group2")
+		if customer.PhoneNumber != "" {
+			TargetCustomers = append(TargetCustomers, customer.PhoneNumber)
+			var currentCustomer model.Customer
+			config.DB.First(&currentCustomer, customer.ID)
+			currentCustomer.DatesReceivedSMS = append(currentCustomer.DatesReceivedSMS, time.Now().String())
+			config.DB.Save(&currentCustomer)
 		}
-	}()
+	}
+
+	//convert customergroupid to string
+	groupId := strconv.FormatInt(body.CustomerGroupID, 10)
+	//convert groupid to int64
+	groupIdInt, _ := strconv.ParseInt(groupId, 10, 64)
 
 	var campaign model.Campaign
 	campaign.OrganizationID = org.ID
@@ -84,7 +84,7 @@ func CreateTextCampaign(c *gin.Context) {
 	campaign.CreatedAt = time.Now().String()
 	campaign.IsTextCampaign = true
 	campaign.CustomersTargeted = int32(len(TargetCustomers))
-	campaign.CustomerGroupID = body.CustomerGroupID
+	campaign.CustomerGroupID = groupIdInt
 
 	config.DB.Create(&campaign)
 	// check if the customer group exists

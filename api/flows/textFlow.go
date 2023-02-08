@@ -7,7 +7,7 @@ import (
 )
 
 type TextFlowBody struct {
-	To       []int32 `json:"to"`
+	To       []int64 `json:"to"`
 	TextBody string  `json:"text_body"`
 	Date     string  `json:"date"`
 }

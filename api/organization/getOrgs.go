@@ -31,7 +31,7 @@ func GetOrg(c *gin.Context) {
 
 	pos := model.Pos{}
 	// get the pos that is associated with the org
-	err := config.DB.Where(&model.Pos{OrganizationID: int32(orgIdInt)}).Find(&pos).Error
+	err := config.DB.Where(&model.Pos{OrganizationID: int64(orgIdInt)}).Find(&pos).Error
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

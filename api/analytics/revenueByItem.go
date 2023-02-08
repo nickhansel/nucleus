@@ -47,7 +47,7 @@ func GetReveneuByItem(c *gin.Context) {
 	//	find purchases where
 	for _, purchase := range purchases {
 		for _, purchasedItem := range purchase.PurchasedItems {
-			if purchasedItem.VariationID == int32(ItemIdInt) {
+			if purchasedItem.VariationID == int64(ItemIdInt) {
 				total += purchasedItem.Cost * float64(purchasedItem.Quantity)
 				item = purchasedItem
 			}

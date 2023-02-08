@@ -9,7 +9,7 @@ import (
 
 type FlowBody struct {
 	Name            string `json:"name"`
-	CustomerGroupID int32  `json:"customer_group_id"`
+	CustomerGroupID int64  `json:"customer_group_id"`
 	TriggerEvent    string `json:"trigger_event"`
 	ActionType      string `json:"action_type"`
 	ActionWaitTime  string `json:"action_wait_time"`

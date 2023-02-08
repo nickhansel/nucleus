@@ -55,7 +55,7 @@ func GetEmailCampaignAnalytics() {
 				EmailCampaignAnalytics.Unsubscribed = int32(analytics.Reports[0].Unsubscribed)
 				EmailCampaignAnalytics.Invalid = int32(analytics.Reports[0].Invalid)
 				EmailCampaignAnalytics.Date = analytics.Reports[0].Date
-				EmailCampaignAnalytics.EmailCampaignID = int32(int(emailCampaign.ID))
+				EmailCampaignAnalytics.EmailCampaignID = int64(int(emailCampaign.ID))
 
 				err = config.DB.Create(&EmailCampaignAnalytics).Error
 

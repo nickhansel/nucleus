@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func ParseSegmentQL(item int32, orgId int32, startDate string, endDate string, minPurchasePrice float64, maxPurchasePrice float64) []int32 {
+func ParseSegmentQL(item int64, orgId int64, startDate string, endDate string, minPurchasePrice float64, maxPurchasePrice float64) []int64 {
 	// find all customers who have a purchase with PurchasedItems.Variation.ID = item
 	// return a slice of customer IDs
 	// get all purchases
@@ -33,7 +33,7 @@ func ParseSegmentQL(item int32, orgId int32, startDate string, endDate string, m
 
 	fmt.Println("Customers: ", len(customers))
 	// get all customers who have a purchase with PurchasedItems.Variation.ID = item
-	var customerIDs []int32
+	var customerIDs []int64
 	if item != 0 {
 		//	find customers who purchased item
 		for _, purchase := range purchases {
@@ -119,7 +119,7 @@ func ParseSegmentQL(item int32, orgId int32, startDate string, endDate string, m
 	return customerIDs
 }
 
-func Contains(s []int32, e int32) bool {
+func Contains(s []int64, e int64) bool {
 	for _, a := range s {
 		if a == e {
 			return true

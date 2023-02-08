@@ -29,7 +29,7 @@ type Analytics struct {
 	} `json:"reports"`
 }
 
-func GetEmailAnalytics(campaignId int32) (Analytics, error) {
+func GetEmailAnalytics(campaignId int64) (Analytics, error) {
 	idToString := strconv.Itoa(int(campaignId))
 
 	reqUrl := "https://api.sendinblue.com/v3/smtp/statistics/reports?limit=10&offset=0&days=1&tag=" + idToString + "&sort=desc"

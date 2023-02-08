@@ -8,13 +8,13 @@ const TableNameVariation = "Variations"
 
 // Variation mapped from table <Variations>
 type Variation struct {
-	ID             int32   `gorm:"column:id;primaryKey" json:"id"`
+	ID             int64   `gorm:"column:id;primaryKey" json:"id"`
 	VarationItemID string  `gorm:"column:varation_item_id;not null" json:"varation_item_id"`
 	IsDeleted      bool    `gorm:"column:isDeleted;not null" json:"isDeleted"`
 	Price          float64 `gorm:"column:price;not null" json:"price"`
 	Currency       string  `gorm:"column:currency;not null" json:"currency"`
 	Name           string  `gorm:"column:name;not null" json:"name"`
-	ItemID         int32   `gorm:"column:itemId;not null" json:"itemId"`
+	ItemID         int64   `gorm:"column:itemId;not null" json:"itemId"`
 	PurchasedItems []PurchasedItem `gorm:"foreignKey:ItemID;references:ItemID"`
 }
 

@@ -3,9 +3,9 @@ package model
 const TableNameEmailCampaignAnalytics = "email_campaign_analytics"
 
 type EmailCampaignAnalytics struct {
-	ID              int32  `gorm:"column:id;primaryKey" json:"id"`
+	ID              int64  `gorm:"column:id;primaryKey" json:"id"`
 	Date            string `gorm:"column:date;not null" json:"date"`
-	EmailCampaignID int32  `gorm:"column:emailCampaignId;not null" json:"emailCampaignId"`
+	EmailCampaignID int64  `gorm:"column:emailCampaignId;not null" json:"emailCampaignId"`
 	Sent            int32  `gorm:"column:sent;not null" json:"sent"`
 	Delivered       int32  `gorm:"column:delivered;not null" json:"delivered"`
 	Bounces         int32  `gorm:"column:bounces;not null" json:"bounces"`

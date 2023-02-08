@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func GetTopCustomers(orgId int32) {
+func GetTopCustomers(orgId int64) {
 	var customers []model.Customer
 
 	config.DB.Where("\"organizationId\" = ?", orgId).Find(&customers)

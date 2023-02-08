@@ -32,7 +32,7 @@ func CreateCustomerGroupSegmentQL(c *gin.Context) {
 		return
 	}
 
-	ql := segmentQL.ParseSegmentQL(int32(query.ItemID), org.ID, query.StartDate, query.EndDate, query.MinPurchasePrice, query.MaxPurchasePrice)
+	ql := segmentQL.ParseSegmentQL(int64(query.ItemID), org.ID, query.StartDate, query.EndDate, query.MinPurchasePrice, query.MaxPurchasePrice)
 
 	var body Body
 	//convert the query to a slice of ints
