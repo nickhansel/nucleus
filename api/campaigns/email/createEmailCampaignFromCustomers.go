@@ -74,7 +74,7 @@ func CreateEmailCampaign(c *gin.Context) {
 
 	var TargetCustomers []string
 	for _, customer := range customerGroup.Customers {
-		if customer.EmailAddress != "" {
+		if customer.EmailAddress != "" && customer.EmailUnsubscribed == false {
 			TargetCustomers = append(TargetCustomers, customer.EmailAddress)
 			//var currentCustomer model.Customer
 			//config.DB.First(&currentCustomer, customer.ID)

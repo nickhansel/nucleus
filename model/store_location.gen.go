@@ -4,6 +4,9 @@
 
 package model
 
+import "github.com/lib/pq"
+
+
 const TableNameStoreLocation = "store_location"
 
 // StoreLocation mapped from table <store_location>
@@ -16,7 +19,7 @@ type StoreLocation struct {
 	PostalCode                   string `gorm:"column:postal_code;not null" json:"postal_code"`
 	Country                      string `gorm:"column:country;not null" json:"country"`
 	Timezone                     string `gorm:"column:timezone;not null" json:"timezone"`
-	Capabilities                 string `gorm:"column:capabilities" json:"capabilities"`
+	Capabilities                 pq.StringArray `gorm:"column:capabilities;type:varchar(255)[]" json:"capabilities"`
 	Status                       string `gorm:"column:status;not null" json:"status"`
 	CreatedAt                    string `gorm:"column:created_at;not null" json:"created_at"`
 	MerchantID                   string `gorm:"column:merchant_id;not null" json:"merchant_id"`

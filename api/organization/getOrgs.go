@@ -29,7 +29,7 @@ func GetOrg(c *gin.Context) {
 		return
 	}
 
-	pos := model.Pos{}
+	var pos []model.Pos
 	// get the pos that is associated with the org
 	err := config.DB.Where(&model.Pos{OrganizationID: int64(orgIdInt)}).Find(&pos).Error
 
