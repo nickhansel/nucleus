@@ -41,6 +41,7 @@ func main() {
 	r.GET("/login", auth.LoginUser)
 
 	r.POST("/shopify/:orgId/oauth", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), shopify.Oauth)
+	r.GET("/shopify/:orgId/load", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), shopify.GetInitialData)
 
 	r.POST("/organization", middleware.JwtAuthMiddleware(), org.CreateOrg)
 	r.GET("/organization/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), org.GetOrg)
