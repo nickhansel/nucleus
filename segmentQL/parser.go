@@ -20,6 +20,7 @@ func ParseSegmentQL(item int64, orgId int64, startDate string, endDate string, m
 			purchases = append(purchases[:0], purchases[1:]...)
 		}
 	}
+	
 	if err != nil {
 		fmt.Println(err)
 	}
