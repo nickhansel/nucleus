@@ -9,7 +9,7 @@ const TableNameCustomer = "Customer"
 
 // Customer mapped from table <Customer>
 type Customer struct {
-	ID                           int32   `gorm:"column:id;primaryKey" json:"id"`
+	ID                           int64   `gorm:"column:id;primaryKey" json:"id"`
 	CreatedAt                    string  `gorm:"column:created_at" json:"created_at"`
 	UpdatedAt                    string  `gorm:"column:updated_at" json:"updated_at"`
 	GivenName                    string  `gorm:"column:given_name;not null" json:"given_name"`
@@ -20,7 +20,7 @@ type Customer struct {
 	Note                         string  `gorm:"column:note" json:"note"`
 	EmailUnsubscribed            bool    `gorm:"column:email_unsubscribed;not null" json:"email_unsubscribed"`
 	CreationSource               string  `gorm:"column:creation_source;not null" json:"creation_source"`
-	OrganizationID               int32   `gorm:"column:organizationId;not null" json:"organizationId"`
+	OrganizationID               int64   `gorm:"column:organizationId;not null" json:"organizationId"`
 	PosID                        string  `gorm:"column:pos_id;not null" json:"pos_id"`
 	Birthday                     string  `gorm:"column:birthday" json:"birthday"`
 	PosName                      string  `gorm:"column:pos_name;not null" json:"pos_name"`
@@ -37,6 +37,7 @@ type Customer struct {
 	IsSMSDeliverable bool `gorm:"column:is_sms_deliverable" json:"is_sms_deliverable"`
 	DatesReceivedEmail  pq.StringArray `gorm:"type:varchar(255)[]" json:"dates_received_email"`
 	DatesReceivedSMS  pq.StringArray `gorm:"type:varchar(255)[]" json:"dates_received_sms"`
+	SmsUnsubscribed bool `gorm:"column:sms_unsubscribed" json:"sms_unsubscribed"`
 }
 
 // TableName Customer's table name

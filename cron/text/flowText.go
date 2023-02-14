@@ -18,7 +18,7 @@ func secondsFromNowUTC(dateString string) int {
 	return int(t.Sub(time.Now()).Seconds())
 }
 
-func ScheduleFlowTexts(Date string, ids []int32, org model.Organization, textBody string) {
+func ScheduleFlowTexts(Date string, ids []int64, org model.Organization, textBody string) {
 	scheduler := tasks.New()
 
 	if Date == "" {

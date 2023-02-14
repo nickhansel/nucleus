@@ -26,7 +26,7 @@ func GetCustomers(c *gin.Context) {
 
 	// query the db and find the customers where organizationId = orgId
 	customers := []model.Customer{}
-	res := config.DB.Where(&model.Customer{OrganizationID: int32(orgIdInt)}).Find(&customers).Error
+	res := config.DB.Where(&model.Customer{OrganizationID: int64(orgIdInt)}).Find(&customers).Error
 
 	if res != nil {
 		fmt.Println("res is not nil")

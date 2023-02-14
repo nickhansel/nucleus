@@ -1,6 +1,7 @@
 package twilio
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -117,7 +118,7 @@ func SendScheduledTexts(TextCampaign model.TextCampaign, org model.Organization)
 	}
 }
 
-func SendFlowTexts(ids []int32, org model.Organization, textBody string) {
+func SendFlowTexts(ids []int64, org model.Organization, textBody string) {
 	err := godotenv.Load("../.env")
 
 	if err != nil {
@@ -162,8 +163,10 @@ func SendFlowTexts(ids []int32, org model.Organization, textBody string) {
 		params.SetTo(numbers[index])
 
 		resp, err := client.Api.CreateMessage(params)
+		fmt.Println(resp)
 
 		if err != nil || resp.ErrorCode != nil {
+			fmt.Println(err)
 			return
 		}
 	}

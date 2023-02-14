@@ -4,11 +4,14 @@
 
 package model
 
+import "github.com/lib/pq"
+
+
 const TableNameStoreLocation = "store_location"
 
 // StoreLocation mapped from table <store_location>
 type StoreLocation struct {
-	ID                           int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	ID                           int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Name                         string `gorm:"column:name;not null" json:"name"`
 	AddressLine1                 string `gorm:"column:address_line_1;not null" json:"address_line_1"`
 	Locality                     string `gorm:"column:locality;not null" json:"locality"`
@@ -16,7 +19,7 @@ type StoreLocation struct {
 	PostalCode                   string `gorm:"column:postal_code;not null" json:"postal_code"`
 	Country                      string `gorm:"column:country;not null" json:"country"`
 	Timezone                     string `gorm:"column:timezone;not null" json:"timezone"`
-	Capabilities                 string `gorm:"column:capabilities" json:"capabilities"`
+	Capabilities                 pq.StringArray `gorm:"column:capabilities;type:varchar(255)[]" json:"capabilities"`
 	Status                       string `gorm:"column:status;not null" json:"status"`
 	CreatedAt                    string `gorm:"column:created_at;not null" json:"created_at"`
 	MerchantID                   string `gorm:"column:merchant_id;not null" json:"merchant_id"`
@@ -24,7 +27,7 @@ type StoreLocation struct {
 	Currency                     string `gorm:"column:currency;not null" json:"currency"`
 	PhoneNumber                  string `gorm:"column:phone_number" json:"phone_number"`
 	BusinessName                 string `gorm:"column:business_name;not null" json:"business_name"`
-	OrganizationID               int32  `gorm:"column:organizationId;not null" json:"organizationId"`
+	OrganizationID               int64  `gorm:"column:organizationId;not null" json:"organizationId"`
 	PosID                        string `gorm:"column:pos_id;not null" json:"pos_id"`
 	Type                         string `gorm:"column:type" json:"type"`
 }

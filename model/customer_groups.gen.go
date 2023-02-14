@@ -9,10 +9,10 @@ const TableNameCustomerGroup = "customer_groups"
 
 // CustomerGroup mapped from table <customer_groups>
 type CustomerGroup struct {
-	ID             int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	ID             int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Name           string `gorm:"column:name;not null" json:"name"`
 	// many to one relationship of Customers to CustomerGroup
-	OrganizationID int32  `gorm:"column:organizationId;not null" json:"organizationId"`
+	OrganizationID int64  `gorm:"column:organizationId;not null" json:"organizationId"`
 	FbCustomAudienceID string `gorm:"column:fb_custom_audience_id" json:"fb_custom_audience_id"`
 	CreatedAt	  time.Time `gorm:"column:created_at;not null" json:"created_at"`
 	UpdatedAt	  time.Time `gorm:"column:updated_at;not null" json:"updated_at"`

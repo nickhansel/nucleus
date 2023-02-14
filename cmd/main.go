@@ -8,6 +8,7 @@ import (
 	"github.com/nickhansel/nucleus/api/customers/groups"
 	"github.com/nickhansel/nucleus/config"
 	"github.com/nickhansel/nucleus/sendinblue"
+	"github.com/nickhansel/nucleus/shopify"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/api/auth"
@@ -38,6 +39,9 @@ func main() {
 	groups.GetTopCustomers(19)
 
 	r.GET("/login", auth.LoginUser)
+
+	r.POST("/shopify/:orgId/oauth", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), shopify.Oauth)
+	r.GET("/shopify/:orgId/load", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), shopify.GetInitialData)
 
 	r.POST("/organization", middleware.JwtAuthMiddleware(), org.CreateOrg)
 	r.GET("/organization/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), org.GetOrg)

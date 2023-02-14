@@ -27,7 +27,10 @@ func GetPageID(c *gin.Context) {
 	}
 
 	var body Body
-	c.BindJSON(&body)
+	err := c.BindJSON(&body)
+	if err != nil {
+		return
+	}
 
 	// get the page id
 	url := fmt.Sprintf("https://graph.facebook.com/v15.0/%s?fields=id,name,fan_count,picture,is_verified&access_token=%s", body.PageName, fbAccessToken)

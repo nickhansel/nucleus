@@ -8,11 +8,11 @@ const TableNameFbCampaign = "fb_campaign"
 
 // FbCampaign mapped from table <fb_campaign>
 type FbCampaign struct {
-	ID         int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	ID         int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Name       string `gorm:"column:name;not null" json:"name"`
 	Objective  string `gorm:"column:objective;not null" json:"objective"`
 	Status     string `gorm:"column:status;not null" json:"status"`
-	CampaignID int32 `gorm:"column:campaignId;not null" json:"campaignId"`
+	CampaignID int64 `gorm:"column:campaignId;not null" json:"campaignId"`
 }
 
 // TableName FbCampaign's table name

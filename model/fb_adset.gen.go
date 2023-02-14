@@ -8,7 +8,7 @@ const TableNameFbAdset = "fb_adset"
 
 // FbAdset mapped from table <fb_adset>
 type FbAdset struct {
-	ID               int32   `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	ID               int64   `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	Name             string  `gorm:"column:name;not null" json:"name"`
 	LifetimeBudget   float64 `gorm:"column:lifetime_budget;not null" json:"lifetime_budget"`
 	StartTime        string  `gorm:"column:start_time;not null" json:"start_time"`
@@ -17,8 +17,8 @@ type FbAdset struct {
 	BidAmount        float64 `gorm:"column:bid_amount;not null" json:"bid_amount"`
 	OptimizationGoal string  `gorm:"column:optimization_goal;not null" json:"optimization_goal"`
 	Status           string  `gorm:"column:status;not null" json:"status"`
-	FbTargetID       int32   `gorm:"column:fb_targetId;not null" json:"fb_targetId"`
-	FbCampaignID     int32   `gorm:"column:fb_campaignId;not null" json:"fb_campaignId"`
+	FbTargetID       int64   `gorm:"column:fb_targetId;not null" json:"fb_targetId"`
+	FbCampaignID     int64   `gorm:"column:fb_campaignId;not null" json:"fb_campaignId"`
 	FbAdsetID		string  `gorm:"column:fb_adset_id;not null" json:"fb_adset_id"`
 }
 

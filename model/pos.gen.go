@@ -12,13 +12,13 @@ const TableNamePo = "Pos"
 
 // Po mapped from table <Pos>
 type Pos struct {
-	ID             int32     `gorm:"column:id;primaryKey" json:"id"`
+	ID             int64     `gorm:"column:id;primaryKey" json:"id"`
 	Name           string    `gorm:"column:name;not null" json:"name"`
 	AccessToken    string    `gorm:"column:access_token;not null" json:"access_token"`
 	RefreshToken   string    `gorm:"column:refresh_token;not null" json:"refresh_token"`
 	ExpiresAt      time.Time `gorm:"column:expires_at;not null" json:"expires_at"`
 	MerchantID     string    `gorm:"column:merchant_id;not null" json:"merchant_id"`
-	OrganizationID int32     `gorm:"column:organizationId;not null" json:"organizationId"`
+	OrganizationID int64     `gorm:"column:organizationId;not null" json:"organizationId"`
 }
 
 // TableName Po's table name

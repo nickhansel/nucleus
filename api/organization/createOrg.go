@@ -1,6 +1,7 @@
 package org
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/nickhansel/nucleus/model"
 )
 
-func CreateNewPos(posName string, orgId int32, c *gin.Context) (model.Pos, error) {
+func CreateNewPos(posName string, orgId int64, c *gin.Context) (model.Pos, error) {
 	// get the date right now
 
 	pos := model.Pos{
@@ -38,6 +39,8 @@ func CreateOrg(c *gin.Context) {
 	// check if the user already has an organization
 	var user model.User
 	err := config.DB.Where("id = ?", id).First(&user).Error
+
+	fmt.Println(id, "user")
 
 	if err == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -79,7 +82,7 @@ func CreateOrg(c *gin.Context) {
 		// add the user as a member of the org
 		Members: []model.User{
 			{
-				ID: id.(int32),
+				ID: id.(int64),
 			},
 		},
 	}
