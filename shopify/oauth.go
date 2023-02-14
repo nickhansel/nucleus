@@ -10,8 +10,8 @@ import (
 )
 
 type Body struct {
-	Name string `json:"name"`
 	Code string `json:"code"`
+	Url  string `json:"url"`
 }
 
 func Oauth(c *gin.Context) {
@@ -25,7 +25,7 @@ func Oauth(c *gin.Context) {
 		return
 	}
 
-	reqUrl := "https://" + body.Name + ".myshopify.com/admin/oauth/access_token?client_id=7636322da1ba1eadb809b738ca4c0129&client_secret=16c5e8ec013752ec84be0924df78532e&code=" + body.Code
+	reqUrl := body.Url + "/admin/oauth/access_token?client_id=7636322da1ba1eadb809b738ca4c0129&client_secret=16c5e8ec013752ec84be0924df78532e&code=" + body.Code
 
 	var client = &http.Client{}
 	req, err := http.NewRequest("POST", reqUrl, nil)
@@ -51,6 +51,14 @@ func Oauth(c *gin.Context) {
 		return
 	}
 
+	//check the status code
+	if resp.StatusCode != 200 {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "error in getting access token",
+		})
+		return
+	}
+
 	//	check if result["access_token"] is nil
 	//	if it is, return an error
 	//	if it isn't, return the access token
@@ -61,7 +69,7 @@ func Oauth(c *gin.Context) {
 		return
 	}
 
-	shopReqUrl := "https://" + body.Name + ".myshopify.com/admin/api/2023-01/shop.json"
+	shopReqUrl := body.Url + "/admin/api/2023-01/shop.json"
 
 	req, err = http.NewRequest("GET", shopReqUrl, nil)
 	//	set the header
@@ -105,7 +113,7 @@ func Oauth(c *gin.Context) {
 	}
 
 	var pos model.Pos
-	pos.Name = "Shopify"
+	pos.Name = "Shopify-Online"
 	pos.MerchantID = strconv.FormatInt(int64(shop["shop"].(map[string]interface{})["id"].(float64)), 10)
 	pos.AccessToken = result["access_token"].(string)
 	pos.RefreshToken = ""
@@ -156,6 +164,19 @@ func Oauth(c *gin.Context) {
 		store.PostalCode = shop["shop"].(map[string]interface{})["zip"].(string)
 	} else {
 		store.PostalCode = ""
+	}
+
+	var organization model.Organization
+	config.DB.Where("\"id\" = ?", org.ID).Find(&organization)
+	organization.ShopifyUrl = body.Url
+
+	// update the organization
+	err = config.DB.Save(&org).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 
 	err = config.DB.Create(&store).Error

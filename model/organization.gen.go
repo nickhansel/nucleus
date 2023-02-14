@@ -38,6 +38,7 @@ type Organization struct {
 	Type              string    `gorm:"column:type;not null" json:"type"`
 	UpdatedAt         time.Time `gorm:"column:updatedAt;not null;default:CURRENT_TIMESTAMP" json:"updatedAt"`
 	EmailVerificationCode string `gorm:"column:email_verification_code;not null" json:"email_verification_code"`
+	ShopifyUrl		string    `gorm:"column:shopify_url;not null" json:"shopify_url"`
 }
 
 // TableName Organization's table name

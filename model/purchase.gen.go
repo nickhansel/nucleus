@@ -20,11 +20,13 @@ type Purchase struct {
 	PurchaseID  string  `gorm:"column:purchase_id;not null" json:"purchase_id"`
 	ProductType string  `gorm:"column:product_type" json:"product_type"`
 	LocationID  int64   `gorm:"column:locationId;not null" json:"locationId"`
+	Location_ID string `gorm:"column:location_id;not null" json:"location_id"`
 	ItemsID     int64   `gorm:"column:itemsId" json:"itemsId"`
 	Location   StoreLocation `gorm:"foreignKey:LocationID;references:ID"`
 	AttributedCampaign Campaign `gorm:"foreignKey:AttributedCampaignID;references:ID"`
 	AttributedCampaignID int64 `gorm:"column:attributedCampaignId;not null" json:"attributedCampaignId"`
 	Customer  Customer `gorm:"foreignKey:CustomerID;references:ID"`
+	OrganizationID int64 `gorm:"column:organizationId;not null" json:"organizationId"`
 }
 
 // TableName Purchase's table name

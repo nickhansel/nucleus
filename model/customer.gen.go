@@ -37,6 +37,7 @@ type Customer struct {
 	IsSMSDeliverable bool `gorm:"column:is_sms_deliverable" json:"is_sms_deliverable"`
 	DatesReceivedEmail  pq.StringArray `gorm:"type:varchar(255)[]" json:"dates_received_email"`
 	DatesReceivedSMS  pq.StringArray `gorm:"type:varchar(255)[]" json:"dates_received_sms"`
+	SmsUnsubscribed bool `gorm:"column:sms_unsubscribed" json:"sms_unsubscribed"`
 }
 
 // TableName Customer's table name
