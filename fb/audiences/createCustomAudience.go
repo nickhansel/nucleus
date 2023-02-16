@@ -90,7 +90,7 @@ func GetCustomersGroup(c *gin.Context) (resp model.CustomerGroup, orgresp model.
 
 }
 
-func GetCustomersGroupByIDS(c *gin.Context, id int) (resp model.CustomerGroup, orgresp model.Organization) {
+func GetCustomersGroupByIDS(c *gin.Context, id int64) (resp model.CustomerGroup, orgresp model.Organization) {
 	org := c.MustGet("orgs").(model.Organization)
 
 	// get the customer group id from the url
@@ -130,7 +130,7 @@ type AudiencePayload struct {
 	Data   [][]string `json:"data"`
 }
 
-func CreateAudience(c *gin.Context, customerGroupID int) (returnId string, err error) {
+func CreateAudience(c *gin.Context, customerGroupID int64) (returnId string, err error) {
 	customerGroup, org := GetCustomersGroupByIDS(c, customerGroupID)
 
 	customAudienceId := Create(c, customerGroup.FbCustomAudienceID, customerGroup.Name, org.FbAccessToken, org.FbAdAccountID)

@@ -7,6 +7,7 @@ import (
 	"github.com/nickhansel/nucleus/api/campaigns/text"
 	"github.com/nickhansel/nucleus/api/customers/groups"
 	"github.com/nickhansel/nucleus/config"
+	"github.com/nickhansel/nucleus/segmentQL"
 	"github.com/nickhansel/nucleus/sendinblue"
 	"github.com/nickhansel/nucleus/shopify"
 
@@ -38,7 +39,10 @@ func main() {
 
 	groups.GetTopCustomers(19)
 
+	segmentQL.Parse(838221504934608897, 838194565431033857, "2023-01-08T04:03:54.895Z", "2023-02-16T04:03:54.895Z", 10, 1000)
+
 	r.GET("/login", auth.LoginUser)
+	r.POST("/signup", auth.SignUp)
 
 	r.POST("/shopify/:orgId/oauth", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), shopify.Oauth)
 	r.GET("/shopify/:orgId/load", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), shopify.GetInitialData)
@@ -51,7 +55,10 @@ func main() {
 	// r.POST("/work", customers.CreateCustomerGroup)
 	r.POST("/customers/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), groups.CreateCustomerGroup)
 	r.POST("/ql/:orgId/", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), groups.CreateCustomerGroupSegmentQL)
+	r.GET("/ql/:orgId/segment", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), groups.SegmentCustomers)
 	r.GET("/customers/:orgId/groups/:groupId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), groups.GetCustomerGroup)
+
+	r.GET("/customers/:orgId/groups", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), groups.ListCustomerGroups)
 
 	r.GET("/purchases/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), transactions.GetPurchases)
 

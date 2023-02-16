@@ -12,8 +12,8 @@ import (
 )
 
 type Body struct {
-	IDs  []int  `json:"ids"`
-	Name string `json:"name"`
+	IDs  []int64 `json:"ids"`
+	Name string  `json:"name"`
 }
 
 func CreateCustomerGroup(c *gin.Context) {
@@ -63,7 +63,7 @@ func CreateCustomerGroup(c *gin.Context) {
 			config.DB.Create(&CustomersToCustomerGroups)
 		}
 	}
-	id, err := fb.CreateAudience(c, int(customerGroup.ID))
+	id, err := fb.CreateAudience(c, customerGroup.ID)
 	if err != nil {
 		return
 	}

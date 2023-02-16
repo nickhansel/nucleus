@@ -9,7 +9,7 @@ import (
 )
 
 func GetPurchases(c *gin.Context) {
-	purchases := []model.Purchase{}
+	var purchases []model.Purchase
 	// add the purchased items and the variation related to the purchased item to the purchase struct
 	err := config.DB.Preload("PurchasedItems").Preload("PurchasedItems.Variation").Preload("Location").Find(&purchases).Error
 
