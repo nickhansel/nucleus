@@ -11,12 +11,13 @@ import (
 )
 
 type SegmentQLRequestBody struct {
-	ItemID           int     `json:"item_id"`
+	ItemID           int64   `json:"item_id"`
 	StartDate        string  `json:"start_date"`
 	EndDate          string  `json:"end_date"`
 	MinPurchasePrice float64 `json:"min_purchase_price"`
 	MaxPurchasePrice float64 `json:"max_purchase_price"`
 	Name             string  `json:"name"`
+	IsVariation      bool    `json:"is_variation"`
 }
 
 func CreateCustomerGroupSegmentQL(c *gin.Context) {
@@ -32,12 +33,12 @@ func CreateCustomerGroupSegmentQL(c *gin.Context) {
 		return
 	}
 
-	ql := segmentQL.ParseSegmentQL(int64(query.ItemID), org.ID, query.StartDate, query.EndDate, query.MinPurchasePrice, query.MaxPurchasePrice)
+	ql := segmentQL.Parse(int64(query.ItemID), org.ID, query.StartDate, query.EndDate, query.MinPurchasePrice, query.MaxPurchasePrice)
 
 	var body Body
 	//convert the query to a slice of ints
 	for _, id := range ql {
-		body.IDs = append(body.IDs, int(id))
+		body.IDs = append(body.IDs, int64(id))
 	}
 
 	body.Name = query.Name
@@ -76,7 +77,7 @@ func CreateCustomerGroupSegmentQL(c *gin.Context) {
 			config.DB.Create(&CustomersToCustomerGroups)
 		}
 	}
-	id, err := fb.CreateAudience(c, int(customerGroup.ID))
+	id, err := fb.CreateAudience(c, customerGroup.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
