@@ -89,6 +89,7 @@ func main() {
 
 	r.POST("/flows/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), flows.CreateFlow)
 	r.POST("/flows/:orgId/sms", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.ScheduleTextFlows)
+	r.POST("/flows/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.ScheduleEmailFlows)
 	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request
