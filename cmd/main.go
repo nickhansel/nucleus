@@ -1,23 +1,21 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/api/analytics"
 	email3 "github.com/nickhansel/nucleus/api/analytics/email"
-	email2 "github.com/nickhansel/nucleus/api/campaigns/email"
-	"github.com/nickhansel/nucleus/api/campaigns/text"
-	"github.com/nickhansel/nucleus/api/customers/groups"
-	"github.com/nickhansel/nucleus/config"
-	"github.com/nickhansel/nucleus/segmentQL"
-	"github.com/nickhansel/nucleus/sendinblue"
-	"github.com/nickhansel/nucleus/shopify"
-
-	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/api/auth"
 	campaign "github.com/nickhansel/nucleus/api/campaigns"
+	email2 "github.com/nickhansel/nucleus/api/campaigns/email"
+	"github.com/nickhansel/nucleus/api/campaigns/text"
 	"github.com/nickhansel/nucleus/api/customers"
+	"github.com/nickhansel/nucleus/api/customers/groups"
 	"github.com/nickhansel/nucleus/api/middleware"
 	org "github.com/nickhansel/nucleus/api/organization"
 	"github.com/nickhansel/nucleus/api/transactions"
+	"github.com/nickhansel/nucleus/config"
+	"github.com/nickhansel/nucleus/sendinblue"
+	"github.com/nickhansel/nucleus/shopify"
 
 	apiFlows "github.com/nickhansel/nucleus/api/flows"
 	fbAcc "github.com/nickhansel/nucleus/fb/account"
@@ -37,9 +35,7 @@ func main() {
 	//email.ScheduleGetEmailBounces()
 	//textCron.ScheduleGetTextBounces()
 
-	groups.GetTopCustomers(19)
-
-	segmentQL.Parse(838221504934608897, 838194565431033857, "2023-01-08T04:03:54.895Z", "2023-02-16T04:03:54.895Z", 10, 1000)
+	//groups.GetTopCustomers(19)
 
 	r.GET("/login", auth.LoginUser)
 	r.POST("/signup", auth.SignUp)
@@ -90,6 +86,7 @@ func main() {
 	r.POST("/flows/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), flows.CreateFlow)
 	r.POST("/flows/:orgId/sms", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.ScheduleTextFlows)
 	r.POST("/flows/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.ScheduleEmailFlows)
+	r.PUT("/flows/:orgId/status/:flowId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.UpdateFlowStatus)
 	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request
