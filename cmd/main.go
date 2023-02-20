@@ -1,23 +1,23 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/api/analytics"
 	email3 "github.com/nickhansel/nucleus/api/analytics/email"
-	email2 "github.com/nickhansel/nucleus/api/campaigns/email"
-	"github.com/nickhansel/nucleus/api/campaigns/text"
-	"github.com/nickhansel/nucleus/api/customers/groups"
-	"github.com/nickhansel/nucleus/config"
-	"github.com/nickhansel/nucleus/segmentQL"
-	"github.com/nickhansel/nucleus/sendinblue"
-	"github.com/nickhansel/nucleus/shopify"
-
-	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/api/auth"
 	campaign "github.com/nickhansel/nucleus/api/campaigns"
+	email2 "github.com/nickhansel/nucleus/api/campaigns/email"
+	"github.com/nickhansel/nucleus/api/campaigns/text"
 	"github.com/nickhansel/nucleus/api/customers"
+	"github.com/nickhansel/nucleus/api/customers/groups"
 	"github.com/nickhansel/nucleus/api/middleware"
 	org "github.com/nickhansel/nucleus/api/organization"
+	"github.com/nickhansel/nucleus/api/templates"
 	"github.com/nickhansel/nucleus/api/transactions"
+	"github.com/nickhansel/nucleus/config"
+	fbCron "github.com/nickhansel/nucleus/cron/fb"
+	"github.com/nickhansel/nucleus/sendinblue"
+	"github.com/nickhansel/nucleus/shopify"
 
 	apiFlows "github.com/nickhansel/nucleus/api/flows"
 	fbAcc "github.com/nickhansel/nucleus/fb/account"
@@ -37,9 +37,9 @@ func main() {
 	//email.ScheduleGetEmailBounces()
 	//textCron.ScheduleGetTextBounces()
 
-	groups.GetTopCustomers(19)
+	fbCron.ScheduleGetFBMetrics()
 
-	segmentQL.Parse(838221504934608897, 838194565431033857, "2023-01-08T04:03:54.895Z", "2023-02-16T04:03:54.895Z", 10, 1000)
+	//groups.GetTopCustomers(19)
 
 	r.GET("/login", auth.LoginUser)
 	r.POST("/signup", auth.SignUp)
@@ -79,9 +79,16 @@ func main() {
 	r.PUT("/fb/:orgId/audiences/:customer_group_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fbAud.UpdateCustomAudience)
 
 	r.POST("/campaigns/:orgId/text", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), text.CreateTextCampaign)
+	r.PUT("/campaigns/:orgId/text", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.UpdateSMSCampaign)
 	r.POST("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email2.CreateEmailCampaign)
+	r.PUT("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.UpdateEmailCampaign)
 	r.GET("/campaigns/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetCampaign)
+	r.PUT("/campaigns/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.UpdateCampaign)
 	r.GET("/campaigns/:orgId/all", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetAllCampaigns)
+
+	r.POST("/templates/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), templates.CreateEmailTemplate)
+	r.GET("/templates/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), templates.GetEmailTemplates)
+	r.GET("/templates/:orgId/email/:id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), templates.GetEmailTemplate)
 
 	r.GET("/metrics/:orgId/email/:email_campaign_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email3.GetEmailAnalytics)
 	r.GET("/metrics/:orgId/totals", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetTotalRevenue)
@@ -89,6 +96,8 @@ func main() {
 
 	r.POST("/flows/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), flows.CreateFlow)
 	r.POST("/flows/:orgId/sms", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.ScheduleTextFlows)
+	r.POST("/flows/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.ScheduleEmailFlows)
+	r.PUT("/flows/:orgId/status/:flowId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.UpdateFlowStatus)
 	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request

@@ -1,6 +1,7 @@
 package groups
 
 import (
+	"fmt"
 	"net/http"
 
 	"time"
@@ -65,11 +66,25 @@ func CreateCustomerGroup(c *gin.Context) {
 	}
 	id, err := fb.CreateAudience(c, customerGroup.ID)
 	if err != nil {
+		config.DB.Delete(&customerGroup)
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Error creating audience: %s", err.Error())})
+		return
+	}
+
+	if id == "" {
+		config.DB.Delete(&customerGroup)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error creating audience!"})
 		return
 	}
 
 	// update the customer group with the facebook audience id
 	customerGroup.FbCustomAudienceID = id
+
+	if id == "" || err != nil {
+		config.DB.Delete(&customerGroup)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error creating audience!"})
+		return
+	}
 	config.DB.Save(&customerGroup)
 
 	c.JSON(http.StatusOK, gin.H{"result": customerGroup})

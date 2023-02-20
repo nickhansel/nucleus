@@ -1,6 +1,7 @@
 package groups
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/config"
 	fb "github.com/nickhansel/nucleus/fb/audiences"
@@ -77,6 +78,7 @@ func CreateCustomerGroupSegmentQL(c *gin.Context) {
 			config.DB.Create(&CustomersToCustomerGroups)
 		}
 	}
+
 	id, err := fb.CreateAudience(c, customerGroup.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -86,6 +88,28 @@ func CreateCustomerGroupSegmentQL(c *gin.Context) {
 	// update the customer group with the facebook audience id
 	customerGroup.FbCustomAudienceID = id
 	config.DB.Save(&customerGroup)
+
+	id, err = fb.CreateAudience(c, customerGroup.ID)
+	if err != nil {
+		config.DB.Delete(&customerGroup)
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Error creating audience: %s", err.Error())})
+		return
+	}
+
+	if id == "" {
+		config.DB.Delete(&customerGroup)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error creating audience!"})
+		return
+	}
+
+	// update the customer group with the facebook audience id
+	customerGroup.FbCustomAudienceID = id
+
+	if id == "" || err != nil {
+		config.DB.Delete(&customerGroup)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error creating audience!"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"result": customerGroup})
 }

@@ -3,12 +3,13 @@ package fb
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/config"
 	"github.com/nickhansel/nucleus/model"
+	"io"
+	"log"
+	"net/http"
+	"time"
 )
 
 type AdsetBody struct {
@@ -40,7 +41,11 @@ type AdsetBody struct {
 
 func CreateAdSet(c *gin.Context) {
 	var adsetBody AdsetBody
-	c.BindJSON(&adsetBody)
+	err := c.BindJSON(&adsetBody)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	org := c.MustGet("orgs").(model.Organization)
 	fbAccId := org.FbAdAccountID
@@ -69,6 +74,11 @@ func CreateAdSet(c *gin.Context) {
 		log.Fatal("wtf")
 	}
 
+	if adsetBody.DailyBudget < 100 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Daily Budget must be greater than $1"})
+		return
+	}
+
 	q := req.URL.Query()
 	q.Add("name", adsetBody.Name)
 	q.Add("start_time", adsetBody.StartTime)
@@ -87,22 +97,51 @@ func CreateAdSet(c *gin.Context) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal("something went wrong")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			return
+		}
+	}(resp.Body)
 
 	// decode the response
 	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	fmt.Println(result)
+
+	//get num days between start and end time where they are ibn the form 2006-01-02 23:59:59-07:00
+	startDateDate, err := time.Parse("2006-01-02 15:04:05-07:00", adsetBody.StartTime)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	endDateDate, err := time.Parse("2006-01-02 15:04:05-07:00", adsetBody.EndTime)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	numDays := endDateDate.Sub(startDateDate).Hours() / 24
+
+	fmt.Println(result)
 
 	// create the adset in the database
 	var adset model.FbAdset
 	adset.Name = adsetBody.Name
-	adset.LifetimeBudget = float64(adsetBody.DailyBudget * 30)
+	adset.LifetimeBudget = float64(adsetBody.DailyBudget*int(numDays)) / 100
 	adset.StartTime = adsetBody.StartTime
 	adset.EndTime = adsetBody.EndTime
 	adset.CampaignID = adsetBody.CampaignId
-	adset.BidAmount = float64(adsetBody.BidAmount)
+	adset.BidAmount = float64(adsetBody.BidAmount) / 100
 	adset.OptimizationGoal = adsetBody.OptimizationGoal
 	adset.Status = adsetBody.Status
 	adset.FbTargetID = 12
@@ -127,7 +166,35 @@ func CreateAdSet(c *gin.Context) {
 	fbTarget.CustomAudiences = customAudienceIds
 	fbTarget.FbAdsetID = adset.ID
 
+	var customersTargeted int32
+
+	var customerGroup model.CustomerGroup
+	for _, customAudience := range adsetBody.Targeting.CustomAudiences {
+		config.DB.Where("\"fb_custom_audience_id\" = ?", customAudience.ID).First(&customerGroup)
+		//	find customers in the customer group
+		var customers []model.CustomersToCustomerGroups
+		config.DB.Where("\"B\" = ?", customerGroup.ID).Find(&customers)
+		customersTargeted += int32(len(customers))
+	}
+
+	//update the fb_campaigns table with the number of customers targeted
+	var campaign model.Campaign
+	config.DB.Where("\"campaign_id\" = ?", adsetBody.CampaignId).First(&campaign)
+	campaign.CustomersTargeted = customersTargeted
+
+	if dbc := config.DB.Save(&campaign); dbc.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": dbc.Error})
+		return
+	}
+
 	if dbc := config.DB.Create(&fbTarget); dbc.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": dbc.Error})
+		return
+	}
+
+	//update the fb_adset with the fb_target_id
+	adset.FbTargetID = fbTarget.ID
+	if dbc := config.DB.Save(&adset); dbc.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": dbc.Error})
 		return
 	}
