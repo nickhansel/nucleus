@@ -15,11 +15,13 @@ import (
 	"github.com/nickhansel/nucleus/api/templates"
 	"github.com/nickhansel/nucleus/api/transactions"
 	"github.com/nickhansel/nucleus/config"
+	"github.com/nickhansel/nucleus/cron/email"
 	fbCron "github.com/nickhansel/nucleus/cron/fb"
 	"github.com/nickhansel/nucleus/sendinblue"
 	"github.com/nickhansel/nucleus/shopify"
 
 	apiFlows "github.com/nickhansel/nucleus/api/flows"
+	textCron "github.com/nickhansel/nucleus/cron/text"
 	fbAcc "github.com/nickhansel/nucleus/fb/account"
 	fb "github.com/nickhansel/nucleus/fb/ads"
 	fbAud "github.com/nickhansel/nucleus/fb/audiences"
@@ -33,9 +35,9 @@ func main() {
 
 	config.Connect()
 
-	//email.GetEmailCampaignAnalytics()
-	//email.ScheduleGetEmailBounces()
-	//textCron.ScheduleGetTextBounces()
+	email.GetEmailCampaignAnalytics()
+	email.ScheduleGetEmailBounces()
+	textCron.ScheduleGetTextBounces()
 
 	fbCron.ScheduleGetFBMetrics()
 
