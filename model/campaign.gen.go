@@ -23,6 +23,7 @@ type Campaign struct {
 	CustomersTargeted int32 `gorm:"column:customers_targeted;not null" json:"customers_targeted"`
 	AttributedRevenue float64 `gorm:"column:attributed_revenue;not null" json:"attributed_revenue"`
 	AttributedConversionCount int32 `gorm:"column:attributed_conversion_count;not null" json:"attributed_conversion_count"`
+	IsDeleted bool `gorm:"column:is_deleted;not null" json:"is_deleted"`
 	//EmailCampaign EmailCampaign `gorm:"foreignKey:campaignId;references:ID" json:"email_campaign"`
 	//TextCampaign TextCampaign `gorm:"foreignKey:campaignId;references:ID" json:"text_campaign"`
 }

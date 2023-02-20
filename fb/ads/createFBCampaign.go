@@ -3,6 +3,7 @@ package fb
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -18,14 +19,16 @@ type CampaignBody struct {
 	Objective           string   `json:"objective"`
 	Status              string   `json:"status"`
 	SpecialAdCategories []string `json:"special_ad_categories"`
-	AccessToken         string   `json:"access_token"`
 	CampaignType        string   `json:"campaign_type"`
 }
 
 func CreateCampaign(c *gin.Context) {
 	// add the campaignbody to the form data of the request
 	var campaignBody CampaignBody
-	c.BindJSON(&campaignBody)
+	err := c.BindJSON(&campaignBody)
+	if err != nil {
+		return
+	}
 
 	// get the org from the context
 	org := c.MustGet("orgs").(model.Organization)
@@ -46,7 +49,8 @@ func CreateCampaign(c *gin.Context) {
 	// create the request
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
-		log.Fatal("wtf")
+		c.JSON(400, gin.H{"error": "Invalid request body"})
+		return
 	}
 
 	// add the form data to the request
@@ -64,11 +68,19 @@ func CreateCampaign(c *gin.Context) {
 	if err != nil {
 		log.Fatal("something went wrong")
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			return
+		}
+	}(resp.Body)
 
 	// convert the response to json
 	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		return
+	}
 
 	var Campaign model.Campaign
 	Campaign.CampaignId = result["id"].(string)
@@ -84,16 +96,21 @@ func CreateCampaign(c *gin.Context) {
 
 	// get the id from the DB of the campaign
 	var campaign model.Campaign
-	config.DB.Where("campaign_id = ?", Campaign.CampaignId).First(&campaign)
+	config.DB.Where("\"campaign_id\" = ?", Campaign.CampaignId).First(&campaign)
 
-	// add the campaign to the org
-	config.DB.Model(&organization).Association("Campaigns").Append(&campaign)
+	//// add the campaign to the org
+	//err = config.DB.Model(&organization).Association("Campaigns").Append(&campaign)
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
 
 	var FbCampaign model.FbCampaign
 	FbCampaign.CampaignID = campaign.ID
 	FbCampaign.Name = campaignBody.Name
 	FbCampaign.Objective = campaignBody.Objective
 	FbCampaign.Status = campaignBody.Status
+	FbCampaign.FbId = result["id"].(string)
 
 	// save the fb campaign to the db
 	config.DB.Save(&FbCampaign)

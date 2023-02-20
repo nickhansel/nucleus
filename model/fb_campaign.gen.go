@@ -13,6 +13,7 @@ type FbCampaign struct {
 	Objective  string `gorm:"column:objective;not null" json:"objective"`
 	Status     string `gorm:"column:status;not null" json:"status"`
 	CampaignID int64 `gorm:"column:campaignId;not null" json:"campaignId"`
+	FbId	   string `gorm:"column:fb_id;not null" json:"fb_id"`
 }
 
 // TableName FbCampaign's table name

@@ -6,6 +6,7 @@ package fb
 import (
 	"fmt"
 	"github.com/pkg/errors"
+	"io"
 	"io/ioutil"
 
 	"bytes"
@@ -42,15 +43,25 @@ func Create(c *gin.Context, customAudienceId string, groupName string, token str
 		return
 	}
 
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(errors.Wrap(err, "Error closing body"))
+			return
+		}
+	}(resp.Body)
 
 	var response map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&response)
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return ""
+	}
 
 	if response["error"] != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": response["error"]})
 		return
 	}
+	fmt.Println(response)
 
 	return response["id"].(string)
 }
@@ -133,11 +144,14 @@ type AudiencePayload struct {
 func CreateAudience(c *gin.Context, customerGroupID int64) (returnId string, err error) {
 	customerGroup, org := GetCustomersGroupByIDS(c, customerGroupID)
 
+	fmt.Println(customerGroup)
+
 	customAudienceId := Create(c, customerGroup.FbCustomAudienceID, customerGroup.Name, org.FbAccessToken, org.FbAdAccountID)
 
 	// check if the custom audience exists
 	if customAudienceId == "" {
 		// abort if the custom audience doesn't exist
+		fmt.Println("Custom audience doesn't exist")
 		return
 	}
 
@@ -148,7 +162,7 @@ func CreateAudience(c *gin.Context, customerGroupID int64) (returnId string, err
 	schema := []string{"FN", "LN", "EMAIL"}
 
 	// create the data
-	data := [][]string{}
+	var data [][]string
 
 	for _, customer := range customers {
 		if customer.GivenName != "" && customer.FamilyName != "" && customer.EmailAddress != "" {
@@ -158,6 +172,10 @@ func CreateAudience(c *gin.Context, customerGroupID int64) (returnId string, err
 			customer.EmailAddress = fmt.Sprintf("%x", sha256.Sum256([]byte(customer.EmailAddress)))
 			data = append(data, []string{customer.GivenName, customer.FamilyName, customer.EmailAddress})
 		}
+	}
+
+	if len(data) == 0 {
+		return "", errors.New("No data to add to the custom audience")
 	}
 
 	payload := AudiencePayload{
@@ -192,10 +210,20 @@ func CreateAudience(c *gin.Context, customerGroupID int64) (returnId string, err
 		return "", errors.New("error")
 	}
 
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(resp.Body)
 
 	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	fmt.Println(result)
 
 	if result["error"] != nil {
 		return "", errors.New("error")

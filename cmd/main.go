@@ -12,8 +12,10 @@ import (
 	"github.com/nickhansel/nucleus/api/customers/groups"
 	"github.com/nickhansel/nucleus/api/middleware"
 	org "github.com/nickhansel/nucleus/api/organization"
+	"github.com/nickhansel/nucleus/api/templates"
 	"github.com/nickhansel/nucleus/api/transactions"
 	"github.com/nickhansel/nucleus/config"
+	fbCron "github.com/nickhansel/nucleus/cron/fb"
 	"github.com/nickhansel/nucleus/sendinblue"
 	"github.com/nickhansel/nucleus/shopify"
 
@@ -34,6 +36,8 @@ func main() {
 	//email.GetEmailCampaignAnalytics()
 	//email.ScheduleGetEmailBounces()
 	//textCron.ScheduleGetTextBounces()
+
+	fbCron.ScheduleGetFBMetrics()
 
 	//groups.GetTopCustomers(19)
 
@@ -75,9 +79,16 @@ func main() {
 	r.PUT("/fb/:orgId/audiences/:customer_group_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), fbAud.UpdateCustomAudience)
 
 	r.POST("/campaigns/:orgId/text", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), text.CreateTextCampaign)
+	r.PUT("/campaigns/:orgId/text", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.UpdateSMSCampaign)
 	r.POST("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email2.CreateEmailCampaign)
+	r.PUT("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.UpdateEmailCampaign)
 	r.GET("/campaigns/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetCampaign)
+	r.PUT("/campaigns/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.UpdateCampaign)
 	r.GET("/campaigns/:orgId/all", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetAllCampaigns)
+
+	r.POST("/templates/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), templates.CreateEmailTemplate)
+	r.GET("/templates/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), templates.GetEmailTemplates)
+	r.GET("/templates/:orgId/email/:id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), templates.GetEmailTemplate)
 
 	r.GET("/metrics/:orgId/email/:email_campaign_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email3.GetEmailAnalytics)
 	r.GET("/metrics/:orgId/totals", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetTotalRevenue)
