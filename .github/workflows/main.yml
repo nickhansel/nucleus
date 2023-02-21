@@ -41,8 +41,8 @@ jobs:
         envkey_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         envkey_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         envkey_SENDINBLUE_API_KEY: ${{ secrets.SENDINBLUE_API_KEY }}
-        envkey_DB_URL: ${{ secrets.GATEWAY_URL }}
-        envkey_GATEWAY_URL: ${{ secrets.JWT_SECRET }}
+        envkey_DB_URL: ${{ secrets.DB_URL }}
+        envkey_GATEWAY_URL: ${{ secrets.GATEWAY_URL }}
         
         file_name: .env
         fail_on_empty: true
