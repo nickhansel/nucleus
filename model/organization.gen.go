@@ -39,6 +39,10 @@ type Organization struct {
 	UpdatedAt         time.Time `gorm:"column:updatedAt;not null;default:CURRENT_TIMESTAMP" json:"updatedAt"`
 	EmailVerificationCode string `gorm:"column:email_verification_code;not null" json:"email_verification_code"`
 	ShopifyUrl		string    `gorm:"column:shopify_url;not null" json:"shopify_url"`
+	EmailCount int32 `gorm:"column:email_count;not null" json:"email_count"`
+	EmailLimit int32 `gorm:"column:email_limit;not null" json:"email_limit"`
+	SmsCount int32 `gorm:"column:sms_count;not null" json:"sms_count"`
+	SmsLimit int32 `gorm:"column:sms_limit;not null" json:"sms_limit"`
 }
 
 // TableName Organization's table name

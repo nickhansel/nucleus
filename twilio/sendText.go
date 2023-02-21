@@ -27,8 +27,14 @@ func SendTextAPI(c *gin.Context) {
 		log.Fatal("Error loading .env file for twilio")
 	}
 
-	os.Setenv("TWILIO_ACCOUNT_SID", os.Getenv("TWILIO_ACCOUNT_SID"))
-	os.Setenv("TWILIO_AUTH_TOKEN", os.Getenv("TWILIO_AUTH_TOKEN"))
+	err = os.Setenv("TWILIO_ACCOUNT_SID", os.Getenv("TWILIO_ACCOUNT_SID"))
+	if err != nil {
+		return
+	}
+	err = os.Setenv("TWILIO_AUTH_TOKEN", os.Getenv("TWILIO_AUTH_TOKEN"))
+	if err != nil {
+		return
+	}
 
 	client := twilio.NewRestClient()
 
@@ -47,6 +53,8 @@ func SendTextAPI(c *gin.Context) {
 		return
 	}
 
+	var sentSms int32
+
 	for _, number := range body.To {
 		var customer model.Customer
 		config.DB.Where("id = ?", number).First(&customer)
@@ -54,6 +62,7 @@ func SendTextAPI(c *gin.Context) {
 			return
 		}
 		numbers = append(numbers, customer.PhoneNumber)
+		sentSms++
 		customer.DatesReceivedSMS = append(customer.DatesReceivedSMS, time.Now().Format("2006-01-02 15:04:05"))
 	}
 
@@ -68,6 +77,9 @@ func SendTextAPI(c *gin.Context) {
 		if err != nil || resp.ErrorCode != nil {
 			log.Fatal(err)
 		}
+
+		org.SmsCount += sentSms
+		config.DB.Save(&org)
 
 		c.JSON(200, gin.H{
 			"message":  "success",
@@ -104,11 +116,14 @@ func SendScheduledTexts(TextCampaign model.TextCampaign, org model.Organization)
 	numbers := TextCampaign.TargetNumbers
 	body := TextCampaign
 
+	var sentSms int32
+
 	for index := range body.TargetNumbers {
 		params := &api.CreateMessageParams{}
 		params.SetBody(body.Body)
 		params.SetFrom(organization.TwilioNumber)
 		params.SetTo(numbers[index])
+		sentSms++
 
 		resp, err := client.Api.CreateMessage(params)
 
@@ -116,6 +131,9 @@ func SendScheduledTexts(TextCampaign model.TextCampaign, org model.Organization)
 			return
 		}
 	}
+
+	org.SmsCount += sentSms
+	config.DB.Save(&org)
 }
 
 func SendFlowTexts(ids []int64, org model.Organization, textBody string) {

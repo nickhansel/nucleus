@@ -133,7 +133,7 @@ func SendScheduledEmails(EmailCampaign model.EmailCampaign, org model.Organizati
 			config.DB.Save(&customer)
 		}
 	}()
-	
+
 	//var emailAddresses []string
 	//for _, v := range EmailCampaign.TargetEmails {
 	//	emailAddresses = append(emailAddresses, fmt.Sprint(v))
@@ -239,6 +239,10 @@ func SendScheduledEmails(EmailCampaign model.EmailCampaign, org model.Organizati
 				return
 			}
 		}(resp.Body)
+
+		org.EmailCount = org.EmailCount + int32(len(targetEmails))
+
+		config.DB.Save(&org)
 
 		// return the response
 		fmt.Println(result)

@@ -50,6 +50,8 @@ func ScheduleFlowEmails(ids []int64, org model.Organization, emailBody string, e
 
 	client := &http.Client{Timeout: 10 * time.Second}
 
+	var sentEmails int32
+
 	//lopp through the ids
 	for _, id := range ids {
 		var customer model.Customer
@@ -59,6 +61,8 @@ func ScheduleFlowEmails(ids []int64, org model.Organization, emailBody string, e
 		if customer.EmailUnsubscribed == true || customer.EmailAddress == "" {
 			continue
 		}
+
+		sentEmails++
 
 		body.To = append(body.To, struct {
 			Email string `json:"email"`
@@ -121,6 +125,9 @@ func ScheduleFlowEmails(ids []int64, org model.Organization, emailBody string, e
 		customer.DatesReceivedEmail = append(customer.DatesReceivedEmail, time.Now().Format("2006-01-02 15:04:05"))
 		config.DB.Save(&customer)
 	}
+
+	org.EmailCount += sentEmails
+	config.DB.Save(&org)
 
 	fmt.Println(result)
 }
