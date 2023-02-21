@@ -48,7 +48,7 @@ func GenerateRefreshToken(user_id int64) (string, error) {
 	claims["user_id"] = strconv.FormatInt(user_id, 10)
 
 	// exp date that expires in 30 days
-	claims["exp"] = time.Now().Add(time.Hour * 24 * 30).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 24 * 1000).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

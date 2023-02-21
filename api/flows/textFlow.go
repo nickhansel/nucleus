@@ -4,12 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/cron/text"
 	"github.com/nickhansel/nucleus/model"
+	"strconv"
 )
 
 type TextFlowBody struct {
-	To       []int64 `json:"to"`
-	TextBody string  `json:"text_body"`
-	Date     string  `json:"date"`
+	To       []string `json:"to"`
+	TextBody string   `json:"text_body"`
+	Date     string   `json:"date"`
 }
 
 func ScheduleTextFlows(c *gin.Context) {
@@ -21,7 +22,12 @@ func ScheduleTextFlows(c *gin.Context) {
 		return
 	}
 
-	ids := textFlowBody.To
+	convertedIds := make([]int64, len(textFlowBody.To))
+	for i, id := range textFlowBody.To {
+		convertedIds[i], _ = strconv.ParseInt(id, 10, 64)
+	}
+
+	ids := convertedIds
 	textBody := textFlowBody.TextBody
 	date := textFlowBody.Date
 
