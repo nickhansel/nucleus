@@ -42,6 +42,12 @@ func main() {
 
 	//groups.GetTopCustomers(19)
 
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "ok",
+		})
+	})
+
 	r.GET("/login", auth.LoginUser)
 	r.POST("/signup", auth.SignUp)
 
