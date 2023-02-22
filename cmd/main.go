@@ -50,6 +50,9 @@ func main() {
 	r.GET("/login", auth.LoginUser)
 	r.POST("/signup", auth.SignUp)
 
+	r.POST("/organization/:orgId/invite", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), auth.SendInviteEmail)
+	r.POST("/organization/:orgId/invite/accept", auth.AcceptInvite)
+
 	r.GET("/generate/text", middleware.JwtAuthMiddleware(), generation.GenerateText)
 
 	r.POST("/shopify/:orgId/oauth", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), shopify.Oauth)
