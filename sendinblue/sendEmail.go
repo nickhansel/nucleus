@@ -117,22 +117,30 @@ func SendScheduledEmails(EmailCampaign model.EmailCampaign, org model.Organizati
 	//goroutine to run the two queries at the same time
 
 	//run the two bottom functions at the same time
-	go func() {
-		var emailAddresses []string
-		for _, v := range EmailCampaign.TargetEmails {
-			emailAddresses = append(emailAddresses, fmt.Sprint(v))
-		}
+	var emailAddresses []string
+	for _, v := range EmailCampaign.TargetEmails {
+		emailAddresses = append(emailAddresses, fmt.Sprint(v))
+	}
 
-		config.DB.Where("email_address IN (?)", emailAddresses).Find(&Customers)
+	var campaign model.Campaign
+	config.DB.Where("id = ?", EmailCampaign.CampaignID).First(&campaign)
 
-	}()
+	var customerGroup model.CustomerGroup
+	config.DB.Where("id = ?", campaign.CustomerGroupID).First(&customerGroup)
 
-	go func() {
-		for _, customer := range Customers {
-			customer.DatesReceivedEmail = append(customer.DatesReceivedEmail, time.Now().Format("2006-01-02 15:04:05"))
-			config.DB.Save(&customer)
-		}
-	}()
+	var customersToCustomerGroups []model.CustomersToCustomerGroups
+	config.DB.Where("\"B\" = ?", customerGroup.ID).Find(&customersToCustomerGroups)
+
+	for _, v := range customersToCustomerGroups {
+		var customer model.Customer
+		config.DB.Where("id = ?", v.A).First(&customer)
+		Customers = append(Customers, customer)
+	}
+
+	for _, customer := range Customers {
+		customer.DatesReceivedEmail = append(customer.DatesReceivedEmail, time.Now().Format("2006-01-02 15:04:05"))
+		config.DB.Save(&customer)
+	}
 
 	//var emailAddresses []string
 	//for _, v := range EmailCampaign.TargetEmails {

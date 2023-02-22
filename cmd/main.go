@@ -10,17 +10,16 @@ import (
 	"github.com/nickhansel/nucleus/api/campaigns/text"
 	"github.com/nickhansel/nucleus/api/customers"
 	"github.com/nickhansel/nucleus/api/customers/groups"
+	"github.com/nickhansel/nucleus/api/generation"
 	"github.com/nickhansel/nucleus/api/middleware"
 	org "github.com/nickhansel/nucleus/api/organization"
 	"github.com/nickhansel/nucleus/api/templates"
 	"github.com/nickhansel/nucleus/api/transactions"
 	"github.com/nickhansel/nucleus/config"
-	"github.com/nickhansel/nucleus/cron/email"
 	"github.com/nickhansel/nucleus/sendinblue"
 	"github.com/nickhansel/nucleus/shopify"
 
 	apiFlows "github.com/nickhansel/nucleus/api/flows"
-	textCron "github.com/nickhansel/nucleus/cron/text"
 	fbAcc "github.com/nickhansel/nucleus/fb/account"
 	fb "github.com/nickhansel/nucleus/fb/ads"
 	fbAud "github.com/nickhansel/nucleus/fb/audiences"
@@ -34,9 +33,9 @@ func main() {
 
 	config.Connect()
 
-	email.GetEmailCampaignAnalytics()
-	email.ScheduleGetEmailBounces()
-	textCron.ScheduleGetTextBounces()
+	//email.GetEmailCampaignAnalytics()
+	//email.ScheduleGetEmailBounces()
+	//textCron.ScheduleGetTextBounces()
 
 	//fbCron.ScheduleGetFBMetrics()
 
@@ -50,6 +49,8 @@ func main() {
 
 	r.GET("/login", auth.LoginUser)
 	r.POST("/signup", auth.SignUp)
+
+	r.GET("/generate/text", middleware.JwtAuthMiddleware(), generation.GenerateText)
 
 	r.POST("/shopify/:orgId/oauth", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), shopify.Oauth)
 	r.GET("/shopify/:orgId/load", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), shopify.GetInitialData)
