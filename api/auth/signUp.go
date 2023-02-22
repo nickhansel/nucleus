@@ -41,6 +41,11 @@ func SignUp(c *gin.Context) {
 
 	config.DB.Create(&org)
 
+	var customerGroup model.CustomerGroup
+	customerGroup.Name = "Default Group"
+	customerGroup.OrganizationID = org.ID
+	config.DB.Create(&customerGroup)
+
 	user := model.User{
 		Email:          body.Email,
 		Password:       hashPassword,
