@@ -167,11 +167,17 @@ func SendFlowTexts(ids []int64, org model.Organization, textBody string) {
 	timeNowString := time.Now().Format("2006-01-02 15:04:05")
 
 	for _, customer := range customers {
-		numbers = append(numbers, customer.PhoneNumber)
-		var customerTarget model.Customer
-		config.DB.Where("id = ?", customer.ID).First(&customerTarget)
-		customerTarget.DatesReceivedSMS = append(customerTarget.DatesReceivedSMS, timeNowString)
-		config.DB.Save(&customerTarget)
+		if customer.PhoneNumber != "" && customer.SmsUnsubscribed == false {
+			numbers = append(numbers, customer.PhoneNumber)
+			var customerTarget model.Customer
+			config.DB.Where("id = ?", customer.ID).First(&customerTarget)
+			customerTarget.DatesReceivedSMS = append(customerTarget.DatesReceivedSMS, timeNowString)
+			config.DB.Save(&customerTarget)
+			var organization model.Organization
+			config.DB.Where("id = ?", org.ID).First(&organization)
+			organization.SmsCount++
+			config.DB.Save(&organization)
+		}
 	}
 
 	for index := range numbers {
