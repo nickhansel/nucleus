@@ -26,15 +26,15 @@ func GetAllCampaigns(c *gin.Context) {
 			var emailCampaign model.EmailCampaign
 			config.DB.Where("\"campaignId\" = ?", campaign.ID).First(&emailCampaign)
 			result = append(result, map[string]interface{}{
-				"campaign":      campaign,
-				"text_campaign": emailCampaign,
+				"campaign":       campaign,
+				"email_campaign": emailCampaign,
 			})
-		} else {
+		} else if campaign.IsFbCampaign {
 			var fbCampaign model.FbCampaign
 			config.DB.Where("\"campaignId\" = ?", campaign.ID).First(&fbCampaign)
 			result = append(result, map[string]interface{}{
-				"campaign":      campaign,
-				"text_campaign": fbCampaign,
+				"campaign":    campaign,
+				"fb_campaign": fbCampaign,
 			})
 		}
 	}

@@ -11,11 +11,13 @@ import (
 	"github.com/nickhansel/nucleus/api/customers"
 	"github.com/nickhansel/nucleus/api/customers/groups"
 	"github.com/nickhansel/nucleus/api/generation"
+	"github.com/nickhansel/nucleus/api/items"
 	"github.com/nickhansel/nucleus/api/middleware"
 	org "github.com/nickhansel/nucleus/api/organization"
 	"github.com/nickhansel/nucleus/api/templates"
 	"github.com/nickhansel/nucleus/api/transactions"
 	"github.com/nickhansel/nucleus/config"
+	"github.com/nickhansel/nucleus/cron/email"
 	"github.com/nickhansel/nucleus/sendinblue"
 	"github.com/nickhansel/nucleus/shopify"
 
@@ -33,8 +35,8 @@ func main() {
 
 	config.Connect()
 
-	//email.GetEmailCampaignAnalytics()
-	//email.ScheduleGetEmailBounces()
+	email.GetEmailCampaignAnalytics()
+	email.ScheduleGetEmailBounces()
 	//textCron.ScheduleGetTextBounces()
 
 	//fbCron.ScheduleGetFBMetrics()
@@ -104,6 +106,8 @@ func main() {
 	r.GET("/metrics/:orgId/email/:email_campaign_id", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email3.GetEmailAnalytics)
 	r.GET("/metrics/:orgId/totals", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetTotalRevenue)
 	r.GET("/metrics/:orgId/item", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), analytics.GetReveneuByItem)
+
+	r.GET("/organization/:orgId/items", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), items.GetAllItems)
 
 	r.POST("/flows/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), flows.CreateFlow)
 	r.POST("/flows/:orgId/sms", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.ScheduleTextFlows)
