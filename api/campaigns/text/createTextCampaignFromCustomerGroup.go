@@ -18,7 +18,7 @@ type Body struct {
 	Name            string  `json:"name"`
 	SendTime        string  `json:"send_time"`
 	TextBody        string  `json:"text_body"`
-	CustomerGroupID int64   `json:"customer_group_id"`
+	CustomerGroupID string  `json:"customer_group_id"`
 }
 
 func CreateTextCampaign(c *gin.Context) {
@@ -36,7 +36,7 @@ func CreateTextCampaign(c *gin.Context) {
 	}
 
 	// make sure there are no values in the body that are empty
-	if body.Type == "" || body.Budget == 0 || body.Name == "" || body.SendTime == "" || body.TextBody == "" || body.CustomerGroupID == 0 {
+	if body.Type == "" || body.Budget == 0 || body.Name == "" || body.SendTime == "" || body.TextBody == "" || body.CustomerGroupID == "0" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields!"})
 		return
 	}
@@ -72,7 +72,7 @@ func CreateTextCampaign(c *gin.Context) {
 	}
 
 	//convert customergroupid to string
-	groupId := strconv.FormatInt(body.CustomerGroupID, 10)
+	groupId := body.CustomerGroupID
 	//convert groupid to int64
 	groupIdInt, _ := strconv.ParseInt(groupId, 10, 64)
 
