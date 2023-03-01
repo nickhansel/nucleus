@@ -5,6 +5,7 @@ package fb
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 
 	"bytes"
@@ -18,7 +19,7 @@ import (
 )
 
 type Body struct {
-	IDs []int32 `json:"ids"`
+	IDs []string `json:"ids"`
 }
 
 func UpdateCustomAudience(c *gin.Context) {
@@ -32,20 +33,24 @@ func UpdateCustomAudience(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Custom audience not found!"})
 	}
 	var body Body
-	c.BindJSON(&body)
+	err := c.BindJSON(&body)
+	if err != nil {
+		return
+	}
 
 	// get the customers from the customer group
 	var customers []model.Customer
 	// find customers where the id is in body.IDs
 	config.DB.Where("id IN (?)", body.IDs).Find(&customers)
+	fmt.Println(customers)
 	// create the schema
 	schema := []string{"FN", "LN", "EMAIL"}
 
 	// create the data
-	data := [][]string{}
+	var data [][]string
 
 	for _, customer := range customers {
-		if customer.GivenName != "" && customer.FamilyName != "" && customer.EmailAddress != "" {
+		if customer.GivenName != "" && customer.FamilyName != "" {
 			// hash the data
 			customer.GivenName = fmt.Sprintf("%x", sha256.Sum256([]byte(customer.GivenName)))
 			customer.FamilyName = fmt.Sprintf("%x", sha256.Sum256([]byte(customer.FamilyName)))
@@ -88,10 +93,19 @@ func UpdateCustomAudience(c *gin.Context) {
 		return
 	}
 
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+	}(resp.Body)
 
 	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"result": result})
 

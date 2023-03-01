@@ -18,23 +18,38 @@ func GetAllCampaigns(c *gin.Context) {
 		if campaign.IsTextCampaign {
 			var textCampaign model.TextCampaign
 			config.DB.Where("\"campaignId\" = ?", campaign.ID).First(&textCampaign)
+			var customerGroup model.CustomerGroup
+			config.DB.Where("\"id\" = ?", campaign.CustomerGroupID).First(&customerGroup)
+
 			result = append(result, map[string]interface{}{
 				"campaign":      campaign,
 				"text_campaign": textCampaign,
+				"group_name":    customerGroup.Name,
+				"group_id":      customerGroup.ID,
 			})
 		} else if campaign.IsEmailCampaign {
 			var emailCampaign model.EmailCampaign
 			config.DB.Where("\"campaignId\" = ?", campaign.ID).First(&emailCampaign)
+			var customerGroup model.CustomerGroup
+			config.DB.Where("\"id\" = ?", campaign.CustomerGroupID).First(&customerGroup)
+
 			result = append(result, map[string]interface{}{
 				"campaign":       campaign,
 				"email_campaign": emailCampaign,
+				"group_name":     customerGroup.Name,
+				"group_id":       customerGroup.ID,
 			})
 		} else if campaign.IsFbCampaign {
 			var fbCampaign model.FbCampaign
 			config.DB.Where("\"campaignId\" = ?", campaign.ID).First(&fbCampaign)
+			var customerGroup model.CustomerGroup
+			config.DB.Where("\"id\" = ?", campaign.CustomerGroupID).First(&customerGroup)
+
 			result = append(result, map[string]interface{}{
 				"campaign":    campaign,
 				"fb_campaign": fbCampaign,
+				"group_name":  customerGroup.Name,
+				"group_id":    customerGroup.ID,
 			})
 		}
 	}

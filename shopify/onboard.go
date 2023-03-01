@@ -317,6 +317,19 @@ func GetCustomers(org model.Organization, shopifyPos model.Pos) error {
 
 	customers := result["customers"].([]interface{})
 
+	var customerGroup model.CustomerGroup
+	config.DB.Where("\"organizationId\" = ? AND \"name\" = ?", org.ID, "Default Group").Find(&customerGroup)
+
+	var shopifyCustomerGroup model.CustomerGroup
+	shopifyCustomerGroup.Name = "Shopify customers"
+	shopifyCustomerGroup.OrganizationID = org.ID
+	config.DB.Create(&shopifyCustomerGroup)
+
+	if customerGroup.ID == 0 {
+		newErr := fmt.Errorf("no customer group found for org %s", org.Name)
+		return newErr
+	}
+
 	for _, customer := range customers {
 		customerMap := customer.(map[string]interface{})
 		var newCustomer model.Customer
@@ -412,17 +425,12 @@ func GetCustomers(org model.Organization, shopifyPos model.Pos) error {
 		config.DB.Create(&newCustomer)
 		fmt.Println("customer created: ", newCustomer.GivenName)
 
-		var customerGroup model.CustomerGroup
-		config.DB.Where("\"organizationId\" = ? AND \"name\" = ?", org.ID, "Default Group").Find(&customerGroup)
-
-		if customerGroup.ID == 0 {
-			newErr := fmt.Errorf("no customer group found for org %s", org.Name)
-			return newErr
-		}
-
 		var customerToCustomerGroup model.CustomersToCustomerGroups
 		customerToCustomerGroup.A = newCustomer.ID
 		customerToCustomerGroup.B = customerGroup.ID
+		config.DB.Create(&customerToCustomerGroup)
+		customerToCustomerGroup.A = newCustomer.ID
+		customerToCustomerGroup.B = shopifyCustomerGroup.ID
 		config.DB.Create(&customerToCustomerGroup)
 		fmt.Println("customer to customer group created: ", customerToCustomerGroup.A)
 
