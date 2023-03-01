@@ -72,6 +72,7 @@ func UpdateCustomAudience(c *gin.Context) {
 	// make the request
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -89,6 +90,7 @@ func UpdateCustomAudience(c *gin.Context) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -96,6 +98,7 @@ func UpdateCustomAudience(c *gin.Context) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
+			fmt.Println(err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -106,6 +109,8 @@ func UpdateCustomAudience(c *gin.Context) {
 	if err != nil {
 		return
 	}
+
+	fmt.Println(result)
 
 	c.JSON(http.StatusOK, gin.H{"result": result})
 
