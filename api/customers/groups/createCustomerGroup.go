@@ -45,6 +45,11 @@ func CreateCustomerGroup(c *gin.Context) {
 		return
 	}
 
+	if body.Name == "" || body.Name == "Square customers" || body.Name == "Shopify customers" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Name can not be empty, \"Square customers\", or \"Shopify customers\""})
+		return
+	}
+
 	var customerGroup model.CustomerGroup
 	customerGroup.Name = body.Name
 	customerGroup.OrganizationID = org.ID
