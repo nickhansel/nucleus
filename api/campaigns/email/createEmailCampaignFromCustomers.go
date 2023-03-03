@@ -1,6 +1,7 @@
 package email
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/nickhansel/nucleus/config"
 	"github.com/nickhansel/nucleus/cron/email"
@@ -55,15 +56,19 @@ func CreateEmailCampaign(c *gin.Context) {
 		return
 	}
 
-	//check if send time is in the future
-	sendTime, err := time.Parse("2006-01-02 15:04:05", campaignBody.SendTime)
+	localTimeZone := time.Now().Location()
+	// convert the send time to central time
+	centralTime, err := time.ParseInLocation("2006-01-02 15:04:05", campaignBody.SendTime, localTimeZone)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if sendTime.Before(time.Now()) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Send time must be in the future"})
+	fmt.Println("send time: ", centralTime)
+	fmt.Println("central time: ", time.Now().In(time.FixedZone("America/Chicago", -6*60*60)))
+	// compare central time to the current time in central time
+	if centralTime.Before(time.Now().In(time.FixedZone("America/Chicago", -6*60*60))) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Send time must be in the future!"})
 		return
 	}
 
