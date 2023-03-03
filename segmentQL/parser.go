@@ -3,6 +3,7 @@ package segmentQL
 import (
 	"fmt"
 	"github.com/nickhansel/nucleus/config"
+	"strconv"
 	"time"
 )
 
@@ -18,7 +19,7 @@ func Parse(item int64, orgId int64, startDate string, endDate string, minPurchas
 	commands["price"] = "\"Purchase\".amount_money"
 	commands["item"] = "\"Items\".id = " + fmt.Sprintf("%d", item)
 
-	query := "SELECT DISTINCT \"customerId\" from \"Purchase\" INNER JOIN \"purchased_item\" ON \"Purchase\".purchase_id = purchased_item.\"purchaseId\"\nINNER JOIN \"Items\" ON purchased_item.\"itemId\" = \"Items\".id WHERE \"Items\".\"organizationId\" = 838194565431033857"
+	query := fmt.Sprintf("SELECT DISTINCT \"customerId\" from \"Purchase\" INNER JOIN \"purchased_item\" ON \"Purchase\".purchase_id = purchased_item.\"purchaseId\"\nINNER JOIN \"Items\" ON purchased_item.\"itemId\" = \"Items\".id WHERE \"Items\".\"organizationId\" = %s", strconv.FormatInt(orgId, 10))
 
 	if startDate != "" && endDate == "" {
 		endDate = time.Now().Format(time.RFC3339Nano)

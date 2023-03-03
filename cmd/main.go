@@ -70,6 +70,7 @@ func main() {
 	r.POST("/ql/:orgId/", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), groups.CreateCustomerGroupSegmentQL)
 	r.GET("/ql/:orgId/segment", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), groups.SegmentCustomers)
 	r.GET("/customers/:orgId/groups/:groupId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), groups.GetCustomerGroup)
+	r.GET("/customers/:orgId/customer/:customerId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), customers.GetCustomerById)
 
 	r.GET("/customers/:orgId/groups", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), groups.ListCustomerGroups)
 
