@@ -6,6 +6,7 @@ import (
 	"github.com/nickhansel/nucleus/cron/email"
 	"github.com/nickhansel/nucleus/model"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -16,7 +17,8 @@ type EmailCampaignBody struct {
 	SendTime        string  `json:"send_time"`
 	Subject         string  `json:"subject"`
 	HtmlContent     string  `json:"htmlContent"`
-	CustomerGroupID int64   `json:"customer_group_id"`
+	CustomerGroupID string  `json:"customer_group_id"`
+	TemplateId      int64   `json:"template_id"`
 }
 
 type EmailBody struct {
@@ -53,16 +55,34 @@ func CreateEmailCampaign(c *gin.Context) {
 		return
 	}
 
+	//check if send time is in the future
+	sendTime, err := time.Parse("2006-01-02 15:04:05", campaignBody.SendTime)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if sendTime.Before(time.Now()) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Send time must be in the future"})
+		return
+	}
+
 	var CustomersToCustomerGroups []model.CustomersToCustomerGroups
 	// preload the customers that are in the customer group
 	config.DB.Preload("Customer").Find(&CustomersToCustomerGroups)
 	// find all the customers in the customer group
 	var customerGroup model.CustomerGroup
 
-	err := config.DB.First(&customerGroup, campaignBody.CustomerGroupID)
+	//convert customer group id to int64 from string
+	convertedId, err := strconv.ParseInt(campaignBody.CustomerGroupID, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	if err.Error != nil {
-		c.AbortWithError(http.StatusBadRequest, err.Error)
+	err = config.DB.First(&customerGroup, convertedId).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -91,7 +111,7 @@ func CreateEmailCampaign(c *gin.Context) {
 	campaign.CreatedAt = time.Now().String()
 	campaign.IsEmailCampaign = true
 	campaign.CustomersTargeted = int32(len(TargetCustomers))
-	campaign.CustomerGroupID = campaignBody.CustomerGroupID
+	campaign.CustomerGroupID = convertedId
 
 	// save the campaign
 	config.DB.Create(&campaign)
@@ -113,7 +133,24 @@ func CreateEmailCampaign(c *gin.Context) {
 	EmailCampaign.TargetEmails = TargetCustomers
 
 	// save the email campaign
-	config.DB.Create(&EmailCampaign)
+	err = config.DB.Create(&EmailCampaign).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var emailCampaignAnalytics model.EmailCampaignAnalytics
+	emailCampaignAnalytics.EmailCampaignID = EmailCampaign.ID
+	//date in format YYYY-MM-DD
+	now := time.Now()
+	emailCampaignAnalytics.Date = now.Format("2006-01-02")
+
+	// save the email campaign analytics
+	err = config.DB.Create(&emailCampaignAnalytics).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	for _, customer := range TargetCustomers {
 		var to struct {

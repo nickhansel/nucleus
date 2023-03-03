@@ -5,7 +5,6 @@ import (
 	"github.com/madflojo/tasks"
 	"github.com/nickhansel/nucleus/config"
 	"github.com/nickhansel/nucleus/model"
-	"github.com/nickhansel/nucleus/sendinblue"
 	"time"
 )
 
@@ -41,23 +40,20 @@ func GetEmailCampaignAnalytics() {
 			config.DB.Find(&emailCampaigns)
 
 			for _, emailCampaign := range emailCampaigns {
-				analytics, err := sendinblue.GetEmailAnalytics(emailCampaign.ID)
+				now := time.Now().Format("2006-01-02")
+
+				//check if there is already an analytics entry for today
+				var emailCampaignAnalytics []model.EmailCampaignAnalytics
+				config.DB.Where("\"emailCampaignId\" = ? AND date = ?", emailCampaign.ID, now).Find(&emailCampaignAnalytics)
+				if len(emailCampaignAnalytics) > 0 {
+					continue
+				}
+
 				var EmailCampaignAnalytics model.EmailCampaignAnalytics
-				EmailCampaignAnalytics.Sent = int32(analytics.Reports[0].Requests)
-				EmailCampaignAnalytics.Delivered = int32(analytics.Reports[0].Delivered)
-				EmailCampaignAnalytics.Bounces = int32(analytics.Reports[0].HardBounces + analytics.Reports[0].SoftBounces)
-				EmailCampaignAnalytics.Clicks = int32(analytics.Reports[0].Clicks)
-				EmailCampaignAnalytics.UniqueClicks = int32(analytics.Reports[0].UniqueClicks)
-				EmailCampaignAnalytics.Opens = int32(analytics.Reports[0].Opens)
-				EmailCampaignAnalytics.UniqueOpens = int32(analytics.Reports[0].UniqueOpens)
-				EmailCampaignAnalytics.SpamReports = int32(analytics.Reports[0].SpamReports)
-				EmailCampaignAnalytics.Blocked = int32(analytics.Reports[0].Blocked)
-				EmailCampaignAnalytics.Unsubscribed = int32(analytics.Reports[0].Unsubscribed)
-				EmailCampaignAnalytics.Invalid = int32(analytics.Reports[0].Invalid)
-				EmailCampaignAnalytics.Date = analytics.Reports[0].Date
+				EmailCampaignAnalytics.Date = now
 				EmailCampaignAnalytics.EmailCampaignID = int64(int(emailCampaign.ID))
 
-				err = config.DB.Create(&EmailCampaignAnalytics).Error
+				err := config.DB.Create(&EmailCampaignAnalytics).Error
 
 				if err != nil {
 					return err
