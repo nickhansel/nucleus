@@ -34,6 +34,11 @@ func CreateCustomerGroupSegmentQL(c *gin.Context) {
 		return
 	}
 
+	if query.Name == "" || query.Name == "Square customers" || query.Name == "Shopify customers" || query.Name == "Default Group" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Name can not be empty, \"Square customers\", \"Shopify customers\" or \"Default Group\"!"})
+		return
+	}
+
 	ql := segmentQL.Parse(int64(query.ItemID), org.ID, query.StartDate, query.EndDate, query.MinPurchasePrice, query.MaxPurchasePrice)
 
 	var body Body
