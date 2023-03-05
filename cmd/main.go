@@ -97,6 +97,7 @@ func main() {
 	r.POST("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), email2.CreateEmailCampaign)
 	r.PUT("/campaigns/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.UpdateEmailCampaign)
 	r.GET("/campaigns/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetCampaign)
+	r.GET("/campaigns/:orgId/campaign/:campaignId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetCampaignsById)
 	r.PUT("/campaigns/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.UpdateCampaign)
 	r.GET("/campaigns/:orgId/all", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), campaign.GetAllCampaigns)
 

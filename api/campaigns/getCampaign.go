@@ -55,3 +55,52 @@ func GetCampaign(c *gin.Context) {
 
 	c.JSON(200, gin.H{"campaign": result})
 }
+
+func GetCampaignsById(c *gin.Context) {
+	org := c.MustGet("orgs").(model.Organization)
+
+	campaignId := c.Param("campaignId")
+
+	//conivrt id to int64
+	convertedId, _ := strconv.ParseInt(campaignId, 10, 64)
+
+	var campaigns model.Campaign
+	config.DB.Where("\"organizationId\" = ? AND \"id\" = ?", org.ID, convertedId).First(&campaigns)
+
+	if campaigns.ID == 0 {
+		c.JSON(401, gin.H{"error": "No campaigns found"})
+		return
+	}
+
+	if campaigns.IsTextCampaign {
+		var textCampaign model.TextCampaign
+		config.DB.Where("\"campaignId\" = ?", campaigns.ID).First(&textCampaign)
+
+		var purchases []model.Purchase
+		config.DB.Where("\"attributedCampaignId\" = ?", campaigns.ID).Find(&purchases)
+
+		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": textCampaign, "purchases": purchases})
+		return
+	}
+
+	if campaigns.IsFbCampaign {
+		var fbCampaign model.FbCampaign
+		config.DB.Where("\"campaignId\" = ?", campaigns.ID).First(&fbCampaign)
+
+		var purchases []model.Purchase
+		config.DB.Where("\"attributedCampaignId\" = ?", campaigns.ID).Find(&purchases)
+
+		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": fbCampaign, "purchases": purchases})
+	}
+
+	if campaigns.IsEmailCampaign {
+		var emailCampaign model.EmailCampaign
+		config.DB.Where("\"campaignId\" = ?", campaigns.ID).First(&emailCampaign)
+
+		var purchases []model.Purchase
+		config.DB.Where("\"attributedCampaignId\" = ?", campaigns.ID).Find(&purchases)
+
+		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": emailCampaign, "purchases": purchases})
+	}
+
+}
