@@ -25,6 +25,7 @@ type CustomerResponse struct {
 	ProductType string  `json:"product_type"`
 	Name        string  `json:"name"`
 	Quantity    int64   `json:"quantity"`
+	Integration string  `json:"integration"`
 }
 
 func GetCustomers(c *gin.Context) {
