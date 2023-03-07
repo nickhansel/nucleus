@@ -67,6 +67,9 @@ func GetCampaignsById(c *gin.Context) {
 	var campaigns model.Campaign
 	config.DB.Where("\"organizationId\" = ? AND \"id\" = ?", org.ID, convertedId).First(&campaigns)
 
+	var customerGroup model.CustomerGroup
+	config.DB.Where("\"id\" = ?", campaigns.CustomerGroupID).First(&customerGroup)
+
 	if campaigns.ID == 0 {
 		c.JSON(401, gin.H{"error": "No campaigns found"})
 		return
@@ -79,7 +82,7 @@ func GetCampaignsById(c *gin.Context) {
 		var purchases []model.Purchase
 		config.DB.Where("\"attributedCampaignId\" = ?", campaigns.ID).Find(&purchases)
 
-		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": textCampaign, "purchases": purchases})
+		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": textCampaign, "purchases": purchases, "customer_group": customerGroup})
 		return
 	}
 
@@ -90,7 +93,7 @@ func GetCampaignsById(c *gin.Context) {
 		var purchases []model.Purchase
 		config.DB.Where("\"attributedCampaignId\" = ?", campaigns.ID).Find(&purchases)
 
-		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": fbCampaign, "purchases": purchases})
+		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": fbCampaign, "purchases": purchases, "customer_group": customerGroup})
 	}
 
 	if campaigns.IsEmailCampaign {
@@ -100,7 +103,42 @@ func GetCampaignsById(c *gin.Context) {
 		var purchases []model.Purchase
 		config.DB.Where("\"attributedCampaignId\" = ?", campaigns.ID).Find(&purchases)
 
-		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": emailCampaign, "purchases": purchases})
+		var emailMetrics []model.EmailCampaignAnalytics
+		config.DB.Where("\"emailCampaignId\" = ?", emailCampaign.ID).Find(&emailMetrics)
+
+		type EmailMetricData struct {
+			TotalSent         int32 `json:"total_sent"`
+			TotalDelivered    int32 `json:"total_delivered"`
+			TotalBounces      int32 `json:"total_bounces"`
+			TotalClicks       int32 `json:"total_clicks"`
+			TotalUniqueClicks int32 `json:"total_unique_clicks"`
+			TotalOpens        int32 `json:"total_opens"`
+			TotalUniqueOpens  int32 `json:"total_unique_opens"`
+			TotalSpamReports  int32 `json:"total_spam_reports"`
+			TotalBlocked      int32 `json:"total_blocked"`
+			TotalUnsubscribes int32 `json:"total_unsubscribes"`
+			TotalInvalid      int32 `json:"total_invalid"`
+		}
+
+		data := EmailMetricData{}
+
+		if len(emailMetrics) > 0 {
+
+			for _, metric := range emailMetrics {
+				data.TotalSent += metric.Sent
+				data.TotalDelivered += metric.Delivered
+				data.TotalBounces += metric.Bounces
+				data.TotalClicks += metric.Clicks
+				data.TotalUniqueClicks += metric.UniqueClicks
+				data.TotalOpens += metric.Opens
+				data.TotalUniqueOpens += metric.UniqueOpens
+				data.TotalSpamReports += metric.SpamReports
+				data.TotalBlocked += metric.Blocked
+				data.TotalUnsubscribes += metric.Unsubscribed
+				data.TotalInvalid += metric.Invalid
+			}
+		}
+		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": emailCampaign, "purchases": purchases, "metrics": data, "customer_group": customerGroup})
 	}
 
 }
