@@ -115,6 +115,7 @@ func main() {
 	r.POST("/flows/:orgId/sms", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.ScheduleTextFlows)
 	r.POST("/flows/:orgId/email", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.ScheduleEmailFlows)
 	r.PUT("/flows/:orgId/status/:flowId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.UpdateFlowStatus)
+	r.GET("/flows/:orgId", middleware.JwtAuthMiddleware(), middleware.CheckOrgMiddleware(), apiFlows.GetFlows)
 	// r.POST("/aws", aws.UploadImage)
 
 	// use api.getCustomers to handle the request
