@@ -7,6 +7,22 @@ import (
 	"strconv"
 )
 
+type PurchaseData struct {
+	ID          int64   `json:"id"`
+	PurchaseID  string  `json:"purchase_id"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
+	AmountMoney float64 `json:"amount_money"`
+	Currency    string  `json:"currency"`
+	Status      string  `json:"status"`
+	SourceType  string  `json:"source_type"`
+	LocationID  string  `json:"location_id"`
+	ProductType string  `json:"product_type"`
+	Name        string  `json:"name"`
+	Quantity    int64   `json:"quantity"`
+	Integration string  `json:"integration"`
+}
+
 func GetCampaign(c *gin.Context) {
 	id := c.Query("id")
 	//convert id to int
@@ -75,6 +91,8 @@ func GetCampaignsById(c *gin.Context) {
 		return
 	}
 
+	var purchaseData []PurchaseData
+
 	if campaigns.IsTextCampaign {
 		var textCampaign model.TextCampaign
 		config.DB.Where("\"campaignId\" = ?", campaigns.ID).First(&textCampaign)
@@ -82,7 +100,15 @@ func GetCampaignsById(c *gin.Context) {
 		var purchases []model.Purchase
 		config.DB.Where("\"attributedCampaignId\" = ?", campaigns.ID).Find(&purchases)
 
-		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": textCampaign, "purchases": purchases, "customer_group": customerGroup})
+		config.DB.Table("\"Purchase\"").Select("*").Joins("INNER JOIN \"purchased_item\" ON \"Purchase\".purchase_id = purchased_item.\"purchaseId\"").
+			Where("\"Purchase\".\"attributedCampaignId\" = ?", campaigns.ID).Scan(&purchaseData)
+
+		if len(purchaseData) == 0 {
+			c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": textCampaign, "purchases": purchases, "customer_group": customerGroup})
+			return
+		}
+
+		c.JSON(200, gin.H{"campaign": campaigns, "sub_campaign": textCampaign, "purchases": purchaseData, "customer_group": customerGroup})
 		return
 	}
 
